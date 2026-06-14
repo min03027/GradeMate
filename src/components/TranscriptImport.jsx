@@ -75,7 +75,8 @@ function TranscriptImport({ onAddMany }) {
         grade: r.grade,
         semester: (r.semester || "").trim(),
       }))
-      .filter((r) => r.name !== "" && r.credit > 0);
+      // 이름 있고 학점이 0 이상인 숫자면 추가 (0학점 허용)
+      .filter((r) => r.name !== "" && !isNaN(r.credit) && r.credit >= 0);
 
     if (valid.length === 0) {
       alert("추가할 과목이 없습니다. 표 내용을 확인해주세요.");
@@ -178,7 +179,7 @@ function TranscriptImport({ onAddMany }) {
                 <input
                   className="ti-col-credit"
                   type="number"
-                  min="1"
+                  min="0"
                   max="9"
                   value={row.credit}
                   onChange={(e) => updateRow(i, "credit", e.target.value)}

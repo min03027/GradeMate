@@ -81,7 +81,7 @@ function SubjectForm({ onAdd, maxGrade = 4 }) {
         <div className="credit-grade-inputs">
           <input
             type="number"
-            min="1"
+            min="0"
             max="9"
             value={credit}
             onChange={(e) => setCredit(e.target.value)}
