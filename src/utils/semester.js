@@ -1,16 +1,20 @@
 // 학기(언제 들었는지) 관련 helper
 // 학기는 "1-1" 형태 문자열로 저장 (학년-학기코드). 코드: 1=1학기, 2=2학기, S=계절
 
+// 코드는 학년 내 시간순으로 정렬되도록 둠 (1 < 1S < 2 < 2S)
 export const TERMS = [
   { code: "1", label: "1학기" },
+  { code: "1S", label: "여름 계절학기" },
   { code: "2", label: "2학기" },
-  { code: "S", label: "계절학기" },
+  { code: "2S", label: "겨울 계절학기" },
 ];
 
 // 학기코드 → 한글 라벨
 export function termLabel(code) {
   const found = TERMS.find((t) => t.code === code);
-  return found ? found.label : code;
+  if (found) return found.label;
+  if (code === "S") return "계절학기"; // 옛 데이터 호환
+  return code;
 }
 
 // "2-1" → "2학년 1학기"

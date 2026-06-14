@@ -98,7 +98,8 @@ const SEMESTER_RE = /(\d{4})\s*학년도\s*(\d)\s*학기/;
 function detectSemester(line) {
   const m = line.match(SEMESTER_RE);
   if (!m) return null;
-  const term = /계절/.test(line) ? "S" : m[2];
+  // 계절이면 1학기 뒤=여름(1S), 2학기 뒤=겨울(2S)
+  const term = /계절/.test(line) ? `${m[2]}S` : m[2];
   return { year: Number(m[1]), term };
 }
 

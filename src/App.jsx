@@ -146,9 +146,8 @@ function App() {
 
   // 3) 메인
   const requirement = getRequirement(setup);
-  // 학과별 최대 학년 (건축 5년제, 약학 6년제, 그 외 4학년)
-  const maxGrade =
-    setup.deptId === "arch" ? 5 : setup.deptId === "pharm" ? 6 : 4;
+  // 1~6학년 모두 선택 가능 (건축 5년제·약학 6년제 등 대비)
+  const maxGrade = 6;
 
   return (
     <div className="app">
