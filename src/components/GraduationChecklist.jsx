@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 // 교양 영역별 필수 (영역당 1과목 이상 이수해야 함)
 const AREAS = ["인성교양", "인문예술", "자연과학", "사회과학", "디지털 리터러시"];
 
@@ -15,19 +13,19 @@ function hasSwCourse(subjects) {
   });
 }
 
-// 졸업 필수 항목들을 점검하고, 빠진 게 있으면 경고를 띄우는 곳
-function GraduationChecklist({ subjects, chapelCount = 7 }) {
-  // 교양 영역 이수 여부 (과목명만으론 영역을 알 수 없어서 직접 체크)
-  const [areaDone, setAreaDone] = useState({});
-  // 채플 7회 / 흡연음주예방교육 (수업 아님 → 체크박스)
-  const [chapelDone, setChapelDone] = useState(false);
-  const [smokingDone, setSmokingDone] = useState(false);
+// 졸업 필수 항목 점검 (체크 상태는 App이 갖고 있고 자동저장됨 → 여기선 props로 받음)
+function GraduationChecklist({ subjects, chapelCount = 7, checklist, onChange }) {
+  const areaDone = checklist.areas || {};
+  const chapelDone = !!checklist.chapel;
+  const smokingDone = !!checklist.smoking;
 
   // 자동 감지 항목
   const swDone = hasSwCourse(subjects);
 
   const toggleArea = (area) =>
-    setAreaDone((prev) => ({ ...prev, [area]: !prev[area] }));
+    onChange({ ...checklist, areas: { ...areaDone, [area]: !areaDone[area] } });
+  const setChapel = (v) => onChange({ ...checklist, chapel: v });
+  const setSmoking = (v) => onChange({ ...checklist, smoking: v });
 
   // 아직 이수 안 한 항목 모으기 (경고문구용)
   const missing = [];
@@ -97,16 +95,14 @@ function GraduationChecklist({ subjects, chapelCount = 7 }) {
           </span>
         </div>
 
-        {/* 채플 7회 — 체크박스 */}
+        {/* 채플 — 체크박스 */}
         <label className={"gc-item" + (chapelDone ? " done" : "")}>
           <input
             type="checkbox"
             checked={chapelDone}
-            onChange={() => setChapelDone(!chapelDone)}
+            onChange={() => setChapel(!chapelDone)}
           />
-          <span className="gc-item-name">
-            채플 {chapelCount}회
-          </span>
+          <span className="gc-item-name">채플 {chapelCount}회</span>
           {!chapelDone && <span className="gc-badge">미이수</span>}
         </label>
 
@@ -115,7 +111,7 @@ function GraduationChecklist({ subjects, chapelCount = 7 }) {
           <input
             type="checkbox"
             checked={smokingDone}
-            onChange={() => setSmokingDone(!smokingDone)}
+            onChange={() => setSmoking(!smokingDone)}
           />
           <span className="gc-item-name">
             흡연·음주 예방교육 <small>(수업 아님 · 이수했으면 체크)</small>

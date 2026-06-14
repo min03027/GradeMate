@@ -7,6 +7,42 @@
   padding: 34px 18px 64px;
 }
 
+/* 사용자 바 (학번/로그아웃) */
+.app-userbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.app-user {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 7px 14px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.app-logout {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 7px 14px;
+  border-radius: 999px;
+  transition: all 0.15s ease;
+}
+
+.app-logout:hover {
+  color: var(--danger);
+  border-color: #fecdd3;
+  background: #fff5f5;
+}
+
 .app-header {
   text-align: center;
   margin-bottom: 26px;
@@ -258,6 +294,63 @@
 
 .onb-start:active {
   transform: translateY(0);
+}
+
+/* 로그인 화면 추가 요소 */
+.login-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  font-size: 15px;
+  background: #fff;
+}
+
+.login-profiles {
+  margin-top: 24px;
+}
+
+.login-profiles-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+
+.login-profile-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  margin-bottom: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  transition: all 0.15s ease;
+}
+
+.login-profile-btn:hover {
+  border-color: var(--primary);
+  background: #f5f5ff;
+}
+
+.login-profile-go {
+  color: var(--primary);
+}
+
+.login-note {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 12px 14px;
 }
 
 /* =========================================================
