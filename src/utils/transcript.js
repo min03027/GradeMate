@@ -93,29 +93,46 @@ function parseLine(line) {
   return courses;
 }
 
-// "2022 학년도 1 학기 (계절)" 같은 줄에서 학기를 뽑아냄 → "2022-1" / "2022-S"
+// "2022 학년도 1 학기 (계절)" 같은 줄에서 학년도/학기를 뽑아냄 → {year, term}
 const SEMESTER_RE = /(\d{4})\s*학년도\s*(\d)\s*학기/;
 function detectSemester(line) {
   const m = line.match(SEMESTER_RE);
   if (!m) return null;
   const term = /계절/.test(line) ? "S" : m[2];
-  return `${m[1]}-${term}`;
+  return { year: Number(m[1]), term };
 }
 
-// 전체 텍스트 → 과목 배열 (각 과목에 학기도 붙여줌)
+// 전체 텍스트 → 과목 배열
+// 성적표엔 "학년도(연도)"만 있으므로, 가장 이른 학년도를 1학년으로 보고 학년으로 환산함
 export function parseTranscript(text) {
   if (!text) return [];
 
   const rows = [];
-  let current = ""; // 직전에 만난 학기 헤더
+  let current = null; // 직전에 만난 {year, term}
 
   for (const line of text.split(/\r?\n/)) {
     const sem = detectSemester(line);
     if (sem) current = sem;
 
     for (const course of parseLine(line)) {
-      rows.push({ ...course, semester: current });
+      rows.push({
+        ...course,
+        _year: current ? current.year : null,
+        _term: current ? current.term : null,
+      });
     }
   }
-  return rows;
+
+  // 가장 이른 학년도 = 1학년 기준으로 환산
+  const years = rows.filter((r) => r._year != null).map((r) => r._year);
+  const minYear = years.length ? Math.min(...years) : null;
+
+  return rows.map((r) => {
+    let semester = "";
+    if (r._year != null && minYear != null) {
+      semester = `${r._year - minYear + 1}-${r._term}`; // 예) "2-1"
+    }
+    const { _year, _term, ...rest } = r;
+    return { ...rest, semester };
+  });
 }

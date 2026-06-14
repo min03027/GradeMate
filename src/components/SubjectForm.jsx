@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
-import { TERMS, recentYears } from "../utils/semester.js";
+import { TERMS, gradeOptions } from "../utils/semester.js";
 
 // 과목 직접 입력 폼
 // 학기/학점/성적은 추가 후에도 그대로 유지해서, 같은 학기 과목을 빠르게 연달아 넣을 수 있게 함
-function SubjectForm({ onAdd }) {
-  const years = recentYears();
+function SubjectForm({ onAdd, maxGrade = 4 }) {
+  const grades = gradeOptions(maxGrade); // [1, 2, 3, ...] 학년
 
   const [name, setName] = useState("");
-  const [year, setYear] = useState(String(years[0])); // 기본: 올해
+  const [schoolYear, setSchoolYear] = useState("1"); // 1학년부터
   const [term, setTerm] = useState("1");
   const [credit, setCredit] = useState("3");
   const [grade, setGrade] = useState("A+");
@@ -15,7 +15,7 @@ function SubjectForm({ onAdd }) {
   const nameRef = useRef(null); // 추가 후 과목명 칸으로 커서 다시 보내기
 
   // 성적 종류 (P는 패스과목)
-  const gradeOptions = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
+  const gradeChoices = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
 
   const handleSubmit = (e) => {
     e.preventDefault(); // 폼 누르면 새로고침 되는거 막기
@@ -26,7 +26,7 @@ function SubjectForm({ onAdd }) {
       return;
     }
 
-    const semester = `${year}-${term}`; // "2024-1"
+    const semester = `${schoolYear}-${term}`; // "1-1" = 1학년 1학기
     onAdd(name.trim(), credit, grade, semester);
 
     // 과목명만 비우고 학기/학점/성적은 유지 → 다음 과목 바로 입력
@@ -38,14 +38,17 @@ function SubjectForm({ onAdd }) {
     <form className="subject-form" onSubmit={handleSubmit}>
       <h2>과목 추가</h2>
 
-      {/* 학기 (언제 들었는지) */}
+      {/* 학기 (언제 들었는지: 학년 + 학기) */}
       <div className="form-row">
         <label>학기</label>
         <div className="semester-inputs">
-          <select value={year} onChange={(e) => setYear(e.target.value)}>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}년
+          <select
+            value={schoolYear}
+            onChange={(e) => setSchoolYear(e.target.value)}
+          >
+            {grades.map((g) => (
+              <option key={g} value={g}>
+                {g}학년
               </option>
             ))}
           </select>
@@ -84,7 +87,7 @@ function SubjectForm({ onAdd }) {
             onChange={(e) => setCredit(e.target.value)}
           />
           <select value={grade} onChange={(e) => setGrade(e.target.value)}>
-            {gradeOptions.map((g) => (
+            {gradeChoices.map((g) => (
               <option key={g} value={g}>
                 {g}
               </option>

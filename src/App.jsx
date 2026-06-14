@@ -146,6 +146,9 @@ function App() {
 
   // 3) 메인
   const requirement = getRequirement(setup);
+  // 학과별 최대 학년 (건축 5년제, 약학 6년제, 그 외 4학년)
+  const maxGrade =
+    setup.deptId === "arch" ? 5 : setup.deptId === "pharm" ? 6 : 4;
 
   return (
     <div className="app">
@@ -182,7 +185,11 @@ function App() {
         />
 
         {/* 과목 입력 (직접 입력 / 성적표 불러오기 탭) */}
-        <SubjectInput onAdd={addSubject} onAddMany={addManySubjects} />
+        <SubjectInput
+          onAdd={addSubject}
+          onAddMany={addManySubjects}
+          maxGrade={maxGrade}
+        />
 
         {/* 평균학점, 이수학점 결과 */}
         <GPAResult subjects={subjects} />

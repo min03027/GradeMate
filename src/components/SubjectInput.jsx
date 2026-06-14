@@ -3,7 +3,7 @@ import SubjectForm from "./SubjectForm.jsx";
 import TranscriptImport from "./TranscriptImport.jsx";
 
 // 과목 입력 방식 선택 (직접 입력 / 성적표 불러오기) 탭
-function SubjectInput({ onAdd, onAddMany }) {
+function SubjectInput({ onAdd, onAddMany, maxGrade }) {
   const [tab, setTab] = useState("manual"); // "manual" | "transcript"
 
   return (
@@ -28,7 +28,7 @@ function SubjectInput({ onAdd, onAddMany }) {
 
       {/* 선택된 탭에 맞는 입력 화면 */}
       {tab === "manual" ? (
-        <SubjectForm onAdd={onAdd} />
+        <SubjectForm onAdd={onAdd} maxGrade={maxGrade} />
       ) : (
         <TranscriptImport onAddMany={onAddMany} />
       )}

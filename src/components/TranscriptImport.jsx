@@ -96,8 +96,8 @@ function TranscriptImport({ onAddMany }) {
 
       <p className="ti-help">
         포털·PDF 성적표의 과목 부분을 복사해 아래에 붙여넣거나, PDF 파일을 올리면
-        과목이 자동으로 정리됩니다. 학기 헤더(예: 2024 학년도 1 학기)가 같이
-        있으면 학기도 자동으로 채워져요.
+        과목이 자동으로 정리됩니다. 학년도 헤더(예: 2024 학년도 1 학기)가 있으면
+        학년(1학년·2학년…)으로 환산해 자동으로 채워줘요.
       </p>
 
       {/* PDF 업로드 */}
@@ -166,7 +166,7 @@ function TranscriptImport({ onAddMany }) {
                   type="text"
                   value={row.semester || ""}
                   onChange={(e) => updateRow(i, "semester", e.target.value)}
-                  placeholder="2024-1"
+                  placeholder="1-1"
                 />
                 <input
                   className="ti-col-name"

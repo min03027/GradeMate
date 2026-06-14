@@ -1,5 +1,5 @@
 // 학기(언제 들었는지) 관련 helper
-// 학기는 "2024-1" 형태 문자열로 저장 (연도-학기코드). 코드: 1=1학기, 2=2학기, S=계절
+// 학기는 "1-1" 형태 문자열로 저장 (학년-학기코드). 코드: 1=1학기, 2=2학기, S=계절
 
 export const TERMS = [
   { code: "1", label: "1학기" },
@@ -13,22 +13,21 @@ export function termLabel(code) {
   return found ? found.label : code;
 }
 
-// "2024-1" → "2024 1학기"
+// "2-1" → "2학년 1학기"
 export function formatSemester(semester) {
   if (!semester) return "";
-  const [year, code] = semester.split("-");
-  return code ? `${year} ${termLabel(code)}` : year;
+  const [grade, code] = semester.split("-");
+  return code ? `${grade}학년 ${termLabel(code)}` : `${grade}학년`;
 }
 
 // 정렬용 키 (빈 값/미상은 가장 뒤로 보냄)
 export function semesterSortKey(semester) {
-  return semester && semester.trim() ? semester : "9999-9";
+  return semester && semester.trim() ? semester : "9-9";
 }
 
-// 학년도 선택지 (올해부터 최근 8년)
-export function recentYears() {
-  const cur = new Date().getFullYear();
-  const years = [];
-  for (let y = cur; y >= cur - 7; y--) years.push(y);
-  return years;
+// 학년 선택지 (1 ~ maxGrade). 학과에 따라 4/5/6학년까지
+export function gradeOptions(maxGrade = 4) {
+  const list = [];
+  for (let g = 1; g <= maxGrade; g++) list.push(g);
+  return list;
 }
