@@ -2,6 +2,7 @@ import { useState } from "react";
 import SubjectForm from "./components/SubjectForm.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
+import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import "./App.css";
 
 function App() {
@@ -48,6 +49,9 @@ function App() {
       </header>
 
       <main className="app-main">
+        {/* 학과/입학유형 골라서 졸업요건 자동 설정 */}
+        <GraduationRequirement subjects={subjects} />
+
         {/* 과목 입력하는 폼 */}
         <SubjectForm onAdd={addSubject} />
 

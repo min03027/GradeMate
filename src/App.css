@@ -32,7 +32,8 @@
 /* 공통 카드 스타일 (폼 / 결과 / 목록) */
 .subject-form,
 .gpa-result,
-.subject-list {
+.subject-list,
+.grad-req {
   background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
@@ -41,7 +42,8 @@
 
 .subject-form h2,
 .gpa-result h2,
-.subject-list h2 {
+.subject-list h2,
+.grad-req h2 {
   font-size: 18px;
   margin-bottom: 16px;
   color: #333333;
@@ -114,6 +116,105 @@
 .result-sub {
   font-size: 12px;
   color: #999999;
+}
+
+/* ---------- 졸업 요건 설정 ---------- */
+/* 졸업학점 + 진행률 영역 */
+.grad-result {
+  margin-top: 16px;
+}
+
+.grad-total {
+  background-color: #f0f3ff;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.grad-total-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.grad-total-label {
+  font-size: 14px;
+  color: #555555;
+}
+
+.grad-total-value {
+  font-size: 26px;
+  font-weight: bold;
+  color: #3b5bdb;
+}
+
+/* 진행 막대 */
+.grad-bar {
+  margin-top: 12px;
+  height: 10px;
+  background-color: #dbe2ff;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.grad-bar-fill {
+  height: 100%;
+  background-color: #3b5bdb;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.grad-progress-text {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555555;
+}
+
+.grad-progress-text b {
+  color: #3b5bdb;
+}
+
+/* 세부 요건 카드 (교양/전공/자유/채플) */
+.grad-detail-cards {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.grad-detail-card {
+  flex: 1;
+  text-align: center;
+  background-color: #f7f8fc;
+  border: 1px solid #eef0f5;
+  border-radius: 10px;
+  padding: 12px 6px;
+}
+
+.grad-detail-label {
+  font-size: 12px;
+  color: #888888;
+}
+
+.grad-detail-value {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.grad-note {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #999999;
+  line-height: 1.5;
+}
+
+.grad-empty {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #e8590c;
+  background-color: #fff4e6;
+  border-radius: 8px;
+  padding: 12px;
 }
 
 /* ---------- 과목 목록 ---------- */
