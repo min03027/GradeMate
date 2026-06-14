@@ -1,4 +1,21 @@
-/* 모든 요소의 기본 여백 제거 및 box-sizing 설정 */
+/* ===== 디자인 토큰 ===== */
+:root {
+  --card: #ffffff;
+  --ink: #0f172a;
+  --ink-2: #475569;
+  --muted: #94a3b8;
+  --line: #e9edf4;
+  --primary: #4f46e5;
+  --grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --ring: rgba(99, 102, 241, 0.18);
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 16px 36px -20px rgba(15, 23, 42, 0.22);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 18px -12px rgba(15, 23, 42, 0.18);
+  --ok: #16a34a;
+  --warn: #ea580c;
+  --danger: #e11d48;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,13 +23,43 @@
 }
 
 body {
-  font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
-  background-color: #f4f6fb;
-  color: #222222;
-  line-height: 1.5;
+  font-family: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui,
+    sans-serif;
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: radial-gradient(
+      1100px 560px at 50% -240px,
+      #e9e6ff 0%,
+      rgba(233, 230, 255, 0) 62%
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #eef1f8 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 button {
   cursor: pointer;
   font-family: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: var(--ink);
+}
+
+/* 공통 포커스 링 */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px var(--ring);
 }

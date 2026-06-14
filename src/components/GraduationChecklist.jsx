@@ -16,7 +16,7 @@ function hasSwCourse(subjects) {
 }
 
 // 졸업 필수 항목들을 점검하고, 빠진 게 있으면 경고를 띄우는 곳
-function GraduationChecklist({ subjects }) {
+function GraduationChecklist({ subjects, chapelCount = 7 }) {
   // 교양 영역 이수 여부 (과목명만으론 영역을 알 수 없어서 직접 체크)
   const [areaDone, setAreaDone] = useState({});
   // 채플 7회 / 흡연음주예방교육 (수업 아님 → 체크박스)
@@ -35,7 +35,7 @@ function GraduationChecklist({ subjects }) {
     if (!areaDone[a]) missing.push(`${a} 영역`);
   });
   if (!swDone) missing.push("소프트웨어와 미래사회(구 컴퓨팅사고력)");
-  if (!chapelDone) missing.push("채플 7회");
+  if (!chapelDone) missing.push(`채플 ${chapelCount}회`);
   if (!smokingDone) missing.push("흡연·음주 예방교육");
 
   return (
@@ -105,7 +105,7 @@ function GraduationChecklist({ subjects }) {
             onChange={() => setChapelDone(!chapelDone)}
           />
           <span className="gc-item-name">
-            채플 7회 <small>(신입학 기준)</small>
+            채플 {chapelCount}회
           </span>
           {!chapelDone && <span className="gc-badge">미이수</span>}
         </label>

@@ -1,14 +1,20 @@
 import { useState } from "react";
+import Onboarding from "./components/Onboarding.jsx";
 import SubjectInput from "./components/SubjectInput.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
+import { getRequirement } from "./data/graduationData.js";
 import "./App.css";
 
 function App() {
   // 과목들 여기에 다 저장함
   const [subjects, setSubjects] = useState([]);
+
+  // 첫 화면에서 고른 입학유형/학과 설정 (null이면 아직 온보딩 전)
+  const [setup, setSetup] = useState(null);
+  const [editingSetup, setEditingSetup] = useState(false);
 
   // 과목 추가하는 함수 (Form에서 호출함)
   const addSubject = (name, credit, grade, semester) => {
@@ -67,6 +73,22 @@ function App() {
     );
   };
 
+  // 아직 설정 안 했거나 변경 중이면 → 첫 화면(온보딩)
+  if (!setup || editingSetup) {
+    return (
+      <Onboarding
+        initial={setup}
+        onComplete={(value) => {
+          setSetup(value);
+          setEditingSetup(false);
+        }}
+      />
+    );
+  }
+
+  // 선택한 설정으로 졸업요건 계산 (채플 횟수 등 공유)
+  const requirement = getRequirement(setup);
+
   return (
     <div className="app">
       <header className="app-header">
@@ -75,11 +97,18 @@ function App() {
       </header>
 
       <main className="app-main">
-        {/* 학과/입학유형 골라서 졸업요건 자동 설정 */}
-        <GraduationRequirement subjects={subjects} />
+        {/* 첫 화면에서 고른 입학유형/학과 기준 졸업요건 */}
+        <GraduationRequirement
+          setup={setup}
+          subjects={subjects}
+          onEdit={() => setEditingSetup(true)}
+        />
 
         {/* 졸업 필수 항목(교양 영역, 채플 등) 점검 */}
-        <GraduationChecklist subjects={subjects} />
+        <GraduationChecklist
+          subjects={subjects}
+          chapelCount={(requirement && requirement.chapel) || 7}
+        />
 
         {/* 과목 입력 (직접 입력 / 성적표 불러오기 탭) */}
         <SubjectInput onAdd={addSubject} onAddMany={addManySubjects} />

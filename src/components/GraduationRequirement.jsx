@@ -1,95 +1,37 @@
-import { useState } from "react";
 import {
   departments,
   admissionTypes,
-  transferYears,
-  transferGrades,
   getRequirement,
-  isCsGroup,
-  changeNeedsGrade,
 } from "../data/graduationData.js";
 import { calcEarnedCredit } from "../utils/credit.js";
 
-// 학과 + 입학유형 고르면 졸업요건(졸업학점 등)을 자동으로 보여주는 곳
-function GraduationRequirement({ subjects }) {
-  const [admission, setAdmission] = useState("freshman"); // 입학유형
-  const [deptId, setDeptId] = useState("general"); // 학과(계열)
-  const [transferYear, setTransferYear] = useState("from23"); // 편입 cs계열 학번
-  const [transferGrade, setTransferGrade] = useState("2"); // 전과한 학년
+// id로 한글 라벨 찾기
+function labelOf(list, id) {
+  const found = list.find((x) => x.id === id);
+  return found ? found.label : id;
+}
 
-  // 선택값으로 졸업요건 찾기
-  const req = getRequirement({ admission, deptId, transferYear, transferGrade });
-
-  // 지금까지 이수한 학점
+// 선택한 입학유형/학과 기준 졸업요건을 보여주는 곳 (선택은 첫 화면에서 함)
+function GraduationRequirement({ setup, subjects, onEdit }) {
+  const req = getRequirement(setup);
   const earned = calcEarnedCredit(subjects);
-
-  // 추가로 보여줄 입력칸 판단
-  const showTransferYear = admission === "transfer" && isCsGroup(deptId);
-  const showTransferGrade = admission === "change" && changeNeedsGrade(deptId);
+  const percent = req ? Math.min(100, Math.round((earned / req.total) * 100)) : 0;
 
   return (
     <div className="grad-req">
-      <h2>🎯 졸업 요건 설정</h2>
-
-      {/* 입학 유형 */}
-      <div className="form-row">
-        <label>입학 유형</label>
-        <select value={admission} onChange={(e) => setAdmission(e.target.value)}>
-          {admissionTypes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </select>
+      <div className="grad-req-head">
+        <h2>🎯 졸업 요건</h2>
+        <button type="button" className="grad-change-btn" onClick={onEdit}>
+          설정 변경
+        </button>
       </div>
 
-      {/* 학과(계열) */}
-      <div className="form-row">
-        <label>학과 / 계열</label>
-        <select value={deptId} onChange={(e) => setDeptId(e.target.value)}>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.label}
-            </option>
-          ))}
-        </select>
+      {/* 선택한 정보 요약 */}
+      <div className="grad-setup-summary">
+        <span className="grad-chip">{labelOf(admissionTypes, setup.admission)}</span>
+        <span className="grad-chip">{labelOf(departments, setup.deptId)}</span>
       </div>
 
-      {/* 편입 cs계열일 때만: 학번 (졸업학점이 학번마다 다름) */}
-      {showTransferYear && (
-        <div className="form-row">
-          <label>학번</label>
-          <select
-            value={transferYear}
-            onChange={(e) => setTransferYear(e.target.value)}
-          >
-            {transferYears.map((y) => (
-              <option key={y.id} value={y.id}>
-                {y.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* 전과일 때만: 전과한 학년 (전공학점이 학년마다 다름) */}
-      {showTransferGrade && (
-        <div className="form-row">
-          <label>전과 학년</label>
-          <select
-            value={transferGrade}
-            onChange={(e) => setTransferGrade(e.target.value)}
-          >
-            {transferGrades.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* 결과: 졸업요건이 있으면 보여주고, 없으면 안내 */}
       {req ? (
         <div className="grad-result">
           {/* 졸업학점 + 진행률 */}
@@ -99,24 +41,17 @@ function GraduationRequirement({ subjects }) {
               <span className="grad-total-value">{req.total}학점</span>
             </div>
 
-            {/* 진행 막대 */}
             <div className="grad-bar">
-              <div
-                className="grad-bar-fill"
-                style={{
-                  width:
-                    Math.min(100, Math.round((earned / req.total) * 100)) + "%",
-                }}
-              />
+              <div className="grad-bar-fill" style={{ width: percent + "%" }} />
             </div>
 
             <div className="grad-progress-text">
               현재 <b>{earned}</b>학점 이수 · 남은 학점{" "}
-              <b>{Math.max(0, req.total - earned)}</b>학점
+              <b>{Math.max(0, req.total - earned)}</b>학점 ({percent}%)
             </div>
           </div>
 
-          {/* 세부 요건 (교양/전공/자유) */}
+          {/* 세부 요건 */}
           <div className="grad-detail-cards">
             <div className="grad-detail-card">
               <p className="grad-detail-label">교양</p>
@@ -143,8 +78,8 @@ function GraduationRequirement({ subjects }) {
         </div>
       ) : (
         <p className="grad-empty">
-          선택하신 학과는 해당 입학유형의 졸업요건 정보가 없습니다. (예: 약학과는
-          전과 대상이 아님)
+          선택하신 조합은 졸업요건 정보가 없습니다. (예: 약학과는 전과 대상이
+          아님) 설정을 변경해 주세요.
         </p>
       )}
     </div>
