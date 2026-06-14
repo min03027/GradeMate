@@ -383,23 +383,6 @@
   gap: 8px;
 }
 
-/* 폼 안의 체크박스(전공 여부) */
-.form-check {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--ink-2);
-  cursor: pointer;
-}
-
-.form-check input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary);
-}
-
 .semester-inputs select,
 .credit-grade-inputs input,
 .credit-grade-inputs select {
@@ -932,21 +915,8 @@
 }
 
 .ti-col-cat {
-  width: 40px;
+  width: 78px;
   flex-shrink: 0;
-}
-
-/* 미리보기 전공 체크박스 (가운데 정렬) */
-.ti-cat-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ti-cat-check input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  accent-color: var(--primary);
 }
 
 .ti-col-credit {
@@ -1090,31 +1060,38 @@
   color: var(--ink);
 }
 
-/* 과목 전공 여부 체크박스 */
-.subject-major {
+/* 전공/교양 세그먼트 토글 */
+.major-toggle {
   display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: 2px;
+  padding: 3px;
+  background: #eef1f8;
+  border-radius: 10px;
+}
+
+.major-toggle button {
+  padding: 6px 13px;
+  border-radius: 7px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 3px 8px 3px 6px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #f1f4f9;
-  color: var(--muted);
-  cursor: pointer;
+  color: var(--ink-2);
+  transition: all 0.15s ease;
 }
 
-.subject-major.on {
-  background: #eef0ff;
+.major-toggle button.active {
+  background: #fff;
   color: var(--primary);
-  border-color: #dcdfff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
 }
 
-.subject-major input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  accent-color: var(--primary);
+.major-toggle.sm {
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.major-toggle.sm button {
+  padding: 4px 8px;
+  font-size: 11px;
 }
 
 .subject-detail {

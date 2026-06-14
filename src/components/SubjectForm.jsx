@@ -1,15 +1,16 @@
 import { useRef, useState } from "react";
 import { TERMS, gradeOptions } from "../utils/semester.js";
+import MajorToggle from "./MajorToggle.jsx";
 
 // 과목 직접 입력 폼
-// 학기/전공여부/학점/성적은 추가 후에도 그대로 유지해서, 비슷한 과목을 빠르게 연달아 넣을 수 있게 함
+// 학기/구분/학점/성적은 추가 후에도 그대로 유지해서, 비슷한 과목을 빠르게 연달아 넣을 수 있게 함
 function SubjectForm({ onAdd, maxGrade = 4 }) {
   const grades = gradeOptions(maxGrade); // [1, 2, 3, ...] 학년
 
   const [name, setName] = useState("");
   const [schoolYear, setSchoolYear] = useState("1"); // 1학년부터
   const [term, setTerm] = useState("1");
-  const [isMajor, setIsMajor] = useState(true); // 전공이면 true, 아니면 교양
+  const [category, setCategory] = useState("major"); // 전공/교양
   const [credit, setCredit] = useState("3");
   const [grade, setGrade] = useState("A+");
 
@@ -28,7 +29,6 @@ function SubjectForm({ onAdd, maxGrade = 4 }) {
     }
 
     const semester = `${schoolYear}-${term}`; // "1-1" = 1학년 1학기
-    const category = isMajor ? "major" : "liberal";
     onAdd(name.trim(), credit, grade, semester, category);
 
     // 과목명만 비우고 학기/학점/성적은 유지 → 다음 과목 바로 입력
@@ -77,17 +77,10 @@ function SubjectForm({ onAdd, maxGrade = 4 }) {
         />
       </div>
 
-      {/* 전공 여부 (체크하면 전공, 해제하면 교양) */}
+      {/* 구분 (전공 / 교양) */}
       <div className="form-row">
-        <label>전공 여부</label>
-        <label className="form-check">
-          <input
-            type="checkbox"
-            checked={isMajor}
-            onChange={(e) => setIsMajor(e.target.checked)}
-          />
-          전공 과목이면 체크 (해제 시 교양)
-        </label>
+        <label>구분</label>
+        <MajorToggle value={category} onChange={setCategory} />
       </div>
 
       {/* 학점 + 성적 한 줄에 */}

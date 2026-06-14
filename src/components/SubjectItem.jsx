@@ -1,8 +1,8 @@
 import { formatSemester } from "../utils/semester.js";
+import MajorToggle from "./MajorToggle.jsx";
 
 // 과목 한 개 보여주는거
 function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
-  const isMajor = (subject.category || "major") === "major";
   return (
     <li className={"subject-item" + (subject.dropped ? " dropped" : "")}>
       <div className="subject-info">
@@ -11,17 +11,12 @@ function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
         )}
         <span className="subject-name">{subject.name}</span>
 
-        {/* 전공 여부 (체크하면 전공, 해제하면 교양) */}
-        <label className={"subject-major" + (isMajor ? " on" : "")}>
-          <input
-            type="checkbox"
-            checked={isMajor}
-            onChange={(e) =>
-              onChangeCategory(subject.id, e.target.checked ? "major" : "liberal")
-            }
-          />
-          전공
-        </label>
+        {/* 전공 / 교양 토글 */}
+        <MajorToggle
+          value={subject.category || "major"}
+          onChange={(v) => onChangeCategory(subject.id, v)}
+          size="sm"
+        />
 
         <span className="subject-detail">
           {subject.credit}학점 · {subject.grade}
