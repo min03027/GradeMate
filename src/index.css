@@ -1,0 +1,18 @@
+/* 모든 요소의 기본 여백 제거 및 box-sizing 설정 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+  background-color: #f4f6fb;
+  color: #222222;
+  line-height: 1.5;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}

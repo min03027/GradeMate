@@ -1,0 +1,221 @@
+/* 전체 화면 가운데 정렬 */
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* 상단 제목 영역 */
+.app-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.app-header h1 {
+  font-size: 32px;
+  color: #3b5bdb;
+}
+
+.app-header p {
+  margin-top: 6px;
+  color: #666666;
+  font-size: 14px;
+}
+
+/* 메인 영역: 카드들을 세로로 쌓기 */
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 공통 카드 스타일 (폼 / 결과 / 목록) */
+.subject-form,
+.gpa-result,
+.subject-list {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.subject-form h2,
+.gpa-result h2,
+.subject-list h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333333;
+}
+
+/* ---------- 입력 폼 ---------- */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.form-row label {
+  width: 70px;
+  font-size: 14px;
+  color: #555555;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d0d4dc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.add-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3b5bdb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.add-button:hover {
+  background-color: #2f4ac0;
+}
+
+/* ---------- 결과(GPA) ---------- */
+.result-cards {
+  display: flex;
+  gap: 12px;
+}
+
+.result-card {
+  flex: 1;
+  text-align: center;
+  background-color: #f0f3ff;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.result-label {
+  font-size: 13px;
+  color: #666666;
+}
+
+.result-value {
+  font-size: 30px;
+  font-weight: bold;
+  color: #3b5bdb;
+  margin: 4px 0;
+}
+
+.result-sub {
+  font-size: 12px;
+  color: #999999;
+}
+
+/* ---------- 과목 목록 ---------- */
+.subject-list ul {
+  list-style: none;
+}
+
+.empty-message {
+  color: #999999;
+  font-size: 14px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.subject-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eef0f5;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* 학점포기한 과목은 흐리게 + 취소선 */
+.subject-item.dropped {
+  opacity: 0.55;
+}
+
+.subject-item.dropped .subject-name {
+  text-decoration: line-through;
+}
+
+.subject-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.subject-name {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.subject-detail {
+  font-size: 13px;
+  color: #666666;
+}
+
+/* 배지 (재수강 / 학점포기) */
+.badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #ffffff;
+}
+
+.badge.retake {
+  background-color: #f59f00;
+}
+
+.badge.dropped-badge {
+  background-color: #adb5bd;
+}
+
+/* 버튼 영역 */
+.subject-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.drop-button,
+.delete-button {
+  font-size: 12px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+}
+
+.drop-button {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.drop-button:hover {
+  background-color: #dde1e6;
+}
+
+.delete-button {
+  background-color: #ffe3e3;
+  color: #e03131;
+}
+
+.delete-button:hover {
+  background-color: #ffc9c9;
+}
+
+/* ---------- 하단 ---------- */
+.app-footer {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 12px;
+  color: #aaaaaa;
+}
