@@ -3,6 +3,7 @@ import SubjectInput from "./components/SubjectInput.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
+import GraduationChecklist from "./components/GraduationChecklist.jsx";
 import "./App.css";
 
 function App() {
@@ -74,6 +75,9 @@ function App() {
       <main className="app-main">
         {/* 학과/입학유형 골라서 졸업요건 자동 설정 */}
         <GraduationRequirement subjects={subjects} />
+
+        {/* 졸업 필수 항목(교양 영역, 채플 등) 점검 */}
+        <GraduationChecklist subjects={subjects} />
 
         {/* 과목 입력 (직접 입력 / 성적표 불러오기 탭) */}
         <SubjectInput onAdd={addSubject} onAddMany={addManySubjects} />

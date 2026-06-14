@@ -34,7 +34,8 @@
 .gpa-result,
 .subject-list,
 .grad-req,
-.transcript-import {
+.transcript-import,
+.grad-check {
   background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
@@ -45,7 +46,8 @@
 .gpa-result h2,
 .subject-list h2,
 .grad-req h2,
-.transcript-import h2 {
+.transcript-import h2,
+.grad-check h2 {
   font-size: 18px;
   margin-bottom: 16px;
   color: #333333;
@@ -142,6 +144,132 @@
 .result-sub {
   font-size: 12px;
   color: #999999;
+}
+
+/* ---------- 졸업 필수 이수 점검 ---------- */
+.gc-warning {
+  background-color: #fff4e6;
+  border: 1px solid #ffd8a8;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.gc-warning-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #e8590c;
+}
+
+.gc-warning ul {
+  margin: 8px 0 8px 18px;
+  list-style: disc;
+}
+
+.gc-warning li {
+  font-size: 13px;
+  color: #d9480f;
+  margin-bottom: 3px;
+}
+
+.gc-warning-foot {
+  font-size: 12px;
+  color: #b35309;
+}
+
+.gc-ok {
+  background-color: #ebfbee;
+  border: 1px solid #b2f2bb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2b8a3e;
+  text-align: center;
+}
+
+.gc-subtitle {
+  font-size: 15px;
+  color: #333333;
+  margin: 16px 0 4px;
+}
+
+.gc-sub-note {
+  font-size: 12px;
+  font-weight: normal;
+  color: #999999;
+}
+
+.gc-hint {
+  font-size: 12px;
+  color: #999999;
+  margin-bottom: 10px;
+}
+
+.gc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #eef0f5;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gc-item.auto {
+  cursor: default;
+}
+
+.gc-item.done {
+  background-color: #f4fbf6;
+  border-color: #d3f9d8;
+}
+
+.gc-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.gc-auto-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.gc-item-name {
+  flex: 1;
+  color: #333333;
+}
+
+.gc-item-name small {
+  color: #999999;
+  font-size: 12px;
+}
+
+.gc-item.done .gc-item-name {
+  color: #2b8a3e;
+}
+
+.gc-badge {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background-color: #ffe3e3;
+  color: #e03131;
+  flex-shrink: 0;
+}
+
+.gc-badge.ok {
+  background-color: #d3f9d8;
+  color: #2b8a3e;
 }
 
 /* ---------- 성적표 불러오기 ---------- */
