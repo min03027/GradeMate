@@ -33,7 +33,8 @@
 .subject-form,
 .gpa-result,
 .subject-list,
-.grad-req {
+.grad-req,
+.transcript-import {
   background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
@@ -43,10 +44,35 @@
 .subject-form h2,
 .gpa-result h2,
 .subject-list h2,
-.grad-req h2 {
+.grad-req h2,
+.transcript-import h2 {
   font-size: 18px;
   margin-bottom: 16px;
   color: #333333;
+}
+
+/* ---------- 입력 방식 탭 ---------- */
+.input-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.input-tab {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d0d4dc;
+  border-radius: 8px;
+  background-color: #f7f8fc;
+  color: #666666;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.input-tab.active {
+  background-color: #3b5bdb;
+  border-color: #3b5bdb;
+  color: #ffffff;
 }
 
 /* ---------- 입력 폼 ---------- */
@@ -116,6 +142,197 @@
 .result-sub {
   font-size: 12px;
   color: #999999;
+}
+
+/* ---------- 성적표 불러오기 ---------- */
+.ti-help {
+  font-size: 13px;
+  color: #777777;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.ti-pdf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ti-pdf-button {
+  display: inline-block;
+  padding: 9px 14px;
+  border: 1px dashed #3b5bdb;
+  border-radius: 8px;
+  color: #3b5bdb;
+  background-color: #f0f3ff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ti-pdf-button:hover {
+  background-color: #e3e9ff;
+}
+
+.ti-loading {
+  font-size: 13px;
+  color: #888888;
+}
+
+.ti-error {
+  font-size: 13px;
+  color: #e8590c;
+  background-color: #fff4e6;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.ti-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d0d4dc;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.ti-analyze-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  background-color: #495057;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.ti-analyze-button:hover {
+  background-color: #343a40;
+}
+
+.ti-analyze-button:disabled {
+  background-color: #ced4da;
+  cursor: not-allowed;
+}
+
+/* 미리보기 표 */
+.ti-preview {
+  margin-top: 16px;
+  border-top: 1px solid #eef0f5;
+  padding-top: 16px;
+}
+
+.ti-count {
+  font-size: 13px;
+  color: #3b5bdb;
+  margin-bottom: 10px;
+}
+
+.ti-empty {
+  font-size: 13px;
+  color: #e8590c;
+  margin-bottom: 10px;
+}
+
+.ti-table-head,
+.ti-table-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ti-table-head {
+  font-size: 12px;
+  color: #999999;
+  padding: 0 2px;
+}
+
+.ti-col-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.ti-col-credit {
+  width: 56px;
+  flex-shrink: 0;
+}
+
+.ti-col-grade {
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.ti-col-del {
+  width: 28px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.ti-table-row input,
+.ti-table-row select {
+  padding: 7px 8px;
+  border: 1px solid #d0d4dc;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.ti-table-row input.ti-col-name {
+  width: 100%;
+}
+
+.ti-row-del {
+  width: 28px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ffe3e3;
+  color: #e03131;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ti-addrow-button {
+  margin-top: 4px;
+  padding: 7px 12px;
+  border: 1px dashed #adb5bd;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #666666;
+  font-size: 13px;
+}
+
+.ti-replace {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #555555;
+}
+
+.ti-submit-button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3b5bdb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.ti-submit-button:hover {
+  background-color: #2f4ac0;
 }
 
 /* ---------- 졸업 요건 설정 ---------- */

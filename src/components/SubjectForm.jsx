@@ -7,8 +7,8 @@ function SubjectForm({ onAdd }) {
   const [credit, setCredit] = useState("3");
   const [grade, setGrade] = useState("A+");
 
-  // 성적 종류 (select에 뿌릴거)
-  const gradeOptions = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"];
+  // 성적 종류 (select에 뿌릴거, P는 패스과목)
+  const gradeOptions = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
 
   // 추가 버튼 눌렀을 때
   const handleSubmit = (e) => {

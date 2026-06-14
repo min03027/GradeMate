@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SubjectForm from "./components/SubjectForm.jsx";
+import SubjectInput from "./components/SubjectInput.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
@@ -27,6 +27,29 @@ function App() {
     setSubjects([...subjects, newSubject]);
   };
 
+  // 성적표에서 여러 과목 한꺼번에 추가 (replace=true면 기존거 비우고 넣음)
+  const addManySubjects = (items, replace) => {
+    setSubjects((prev) => {
+      const result = replace ? [] : [...prev];
+
+      items.forEach((item, i) => {
+        // 같은 과목명이 (기존+이번 배치에) 이미 있으면 재수강 처리
+        const isRetake = result.some((s) => s.name === item.name);
+
+        result.push({
+          id: Date.now() + i, // 한꺼번에 넣을 때 id 안 겹치게 +i
+          name: item.name,
+          credit: Number(item.credit),
+          grade: item.grade,
+          retake: isRetake,
+          dropped: false,
+        });
+      });
+
+      return result;
+    });
+  };
+
   // 과목 삭제 (누른거 빼고 다시 저장)
   const deleteSubject = (id) => {
     setSubjects(subjects.filter((s) => s.id !== id));
@@ -52,8 +75,8 @@ function App() {
         {/* 학과/입학유형 골라서 졸업요건 자동 설정 */}
         <GraduationRequirement subjects={subjects} />
 
-        {/* 과목 입력하는 폼 */}
-        <SubjectForm onAdd={addSubject} />
+        {/* 과목 입력 (직접 입력 / 성적표 불러오기 탭) */}
+        <SubjectInput onAdd={addSubject} onAddMany={addManySubjects} />
 
         {/* 평균학점, 이수학점 결과 */}
         <GPAResult subjects={subjects} />

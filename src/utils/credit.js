@@ -41,7 +41,10 @@ export function calcGPA(subjects) {
   let gpaCredit = 0;
 
   targets.forEach((s) => {
-    totalPoint += gradePointMap[s.grade] * s.credit;
+    const point = gradePointMap[s.grade];
+    // P(패스) 처럼 평점이 없는 과목은 GPA 계산에서 제외
+    if (typeof point !== "number") return;
+    totalPoint += point * s.credit;
     gpaCredit += s.credit;
   });
 
