@@ -24,9 +24,17 @@ function TranscriptImport({ onAddMany }) {
 
     try {
       let extracted = "";
-      const isPdf =
-        file.type === "application/pdf" ||
-        (file.name || "").toLowerCase().endsWith(".pdf");
+      const name = (file.name || "").toLowerCase();
+      const type = file.type || "";
+
+      const isPdf = type === "application/pdf" || name.endsWith(".pdf");
+      const isExcel =
+        name.endsWith(".xlsx") ||
+        name.endsWith(".xls") ||
+        name.endsWith(".csv") ||
+        type.includes("spreadsheet") ||
+        type.includes("excel") ||
+        type === "text/csv";
 
       if (isPdf) {
         // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
@@ -41,7 +49,12 @@ function TranscriptImport({ onAddMany }) {
               : `PDF 읽는 중… ${pct}%`
           );
         });
-      } else if ((file.type || "").startsWith("image/")) {
+      } else if (isExcel) {
+        // 엑셀도 라이브러리가 커서 필요할 때만 동적으로 불러옴
+        setBusyMsg("엑셀 읽는 중…");
+        const { extractExcelText } = await import("../utils/excel.js");
+        extracted = await extractExcelText(file);
+      } else if (type.startsWith("image/")) {
         // tesseract.js OCR도 무거워서 이미지 올릴 때만 동적으로 불러옴
         setBusyMsg("이미지 인식 준비 중…");
         const { extractImageText } = await import("../utils/ocr.js");
@@ -49,7 +62,7 @@ function TranscriptImport({ onAddMany }) {
           setBusyMsg(`이미지 인식 중… ${Math.round(progress * 100)}%`);
         });
       } else {
-        setFileError("PDF 또는 이미지 파일만 인식할 수 있어요.");
+        setFileError("PDF · 이미지 · 엑셀(xlsx/xls/csv) 파일만 인식할 수 있어요.");
         return;
       }
 
@@ -152,18 +165,18 @@ function TranscriptImport({ onAddMany }) {
       <h2>성적표 불러오기</h2>
 
       <p className="ti-help">
-        성적표 PDF나 캡처 이미지를 올리면 과목이 자동으로 정리됩니다. 이미지를
-        복사한 뒤 아래 입력칸에 <b>붙여넣기(Ctrl/⌘+V)</b> 해도 OCR로 인식돼요.
-        포털/PDF의 과목 글자를 복사해 붙여넣어도 됩니다.
+        성적표 PDF·이미지·엑셀(xlsx/xls/csv)을 올리면 과목이 자동으로 정리됩니다.
+        이미지를 복사한 뒤 아래 입력칸에 <b>붙여넣기(Ctrl/⌘+V)</b> 해도 OCR로
+        인식돼요. 포털/PDF의 과목 글자를 복사해 붙여넣어도 됩니다.
       </p>
 
-      {/* PDF / 이미지 업로드 */}
+      {/* PDF / 이미지 / 엑셀 업로드 */}
       <div className="ti-pdf-row">
         <label className="ti-pdf-button">
-          📄 파일 선택 (PDF·이미지)
+          📄 파일 선택 (PDF·이미지·엑셀)
           <input
             type="file"
-            accept="application/pdf,image/*"
+            accept="application/pdf,image/*,.xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
             onChange={handleFile}
             disabled={busy}
             hidden
