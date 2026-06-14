@@ -14,9 +14,8 @@ function TranscriptImport({ onAddMany }) {
   const [busyMsg, setBusyMsg] = useState(""); // 진행 상황 메시지
   const [fileError, setFileError] = useState("");
 
-  // PDF/이미지 파일 선택했을 때 → 글자 추출해서 입력칸에 붙여줌
-  const handleFile = async (e) => {
-    const file = e.target.files[0];
+  // PDF/이미지 파일 1개에서 글자 추출해서 입력칸에 이어붙임 (파일선택/붙여넣기 공용)
+  const processFile = async (file) => {
     if (!file) return;
 
     setBusy(true);
@@ -27,14 +26,14 @@ function TranscriptImport({ onAddMany }) {
       let extracted = "";
       const isPdf =
         file.type === "application/pdf" ||
-        file.name.toLowerCase().endsWith(".pdf");
+        (file.name || "").toLowerCase().endsWith(".pdf");
 
       if (isPdf) {
         // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
         setBusyMsg("PDF 읽는 중…");
         const { extractPdfText } = await import("../utils/pdf.js");
         extracted = await extractPdfText(file);
-      } else if (file.type.startsWith("image/")) {
+      } else if ((file.type || "").startsWith("image/")) {
         // tesseract.js OCR도 무거워서 이미지 올릴 때만 동적으로 불러옴
         setBusyMsg("이미지 인식 준비 중…");
         const { extractImageText } = await import("../utils/ocr.js");
@@ -42,7 +41,7 @@ function TranscriptImport({ onAddMany }) {
           setBusyMsg(`이미지 인식 중… ${Math.round(progress * 100)}%`);
         });
       } else {
-        setFileError("PDF 또는 이미지 파일을 선택해주세요.");
+        setFileError("PDF 또는 이미지 파일만 인식할 수 있어요.");
         return;
       }
 
@@ -56,8 +55,34 @@ function TranscriptImport({ onAddMany }) {
     } finally {
       setBusy(false);
       setBusyMsg("");
-      e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
     }
+  };
+
+  // 파일 선택 버튼으로 올렸을 때
+  const handleFile = async (e) => {
+    await processFile(e.target.files[0]);
+    e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
+  };
+
+  // 입력칸에 붙여넣기(Ctrl/Cmd+V) 했을 때
+  // - 클립보드에 "이미지"가 있으면 (스크린샷 등) → OCR 처리
+  // - 일반 텍스트면 → 그냥 평소대로 붙여넣기
+  const handlePaste = (e) => {
+    if (busy) return;
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.type && item.type.startsWith("image/")) {
+        const blob = item.getAsFile();
+        if (blob) {
+          e.preventDefault(); // 이미지는 텍스트영역에 안 들어가니 막고 OCR로
+          processFile(blob);
+          return;
+        }
+      }
+    }
+    // 이미지가 없으면 기본 텍스트 붙여넣기 동작 그대로 둠
   };
 
   // "분석하기" → 텍스트 파싱
@@ -109,8 +134,9 @@ function TranscriptImport({ onAddMany }) {
       <h2>성적표 불러오기</h2>
 
       <p className="ti-help">
-        성적표 PDF나 캡처 이미지를 올리면 과목이 자동으로 정리됩니다. 또는 학교
-        포털/PDF의 과목 부분을 복사해 아래에 직접 붙여넣어도 됩니다.
+        성적표 PDF나 캡처 이미지를 올리면 과목이 자동으로 정리됩니다. 이미지를
+        복사한 뒤 아래 입력칸에 <b>붙여넣기(Ctrl/⌘+V)</b> 해도 OCR로 인식돼요.
+        포털/PDF의 과목 글자를 복사해 붙여넣어도 됩니다.
       </p>
 
       {/* PDF / 이미지 업로드 */}
@@ -134,8 +160,9 @@ function TranscriptImport({ onAddMany }) {
         className="ti-textarea"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onPaste={handlePaste}
         placeholder={
-          "예시)\n자료구조  3  A+\n운영체제  3  B+\n현대사회와 윤리  2  P"
+          "여기에 성적표 글자를 붙여넣거나, 캡처 이미지를 붙여넣으세요(Ctrl/⌘+V).\n\n예시)\n자료구조  3  A+\n운영체제  3  B+\n현대사회와 윤리  2  P"
         }
         rows={6}
       />
