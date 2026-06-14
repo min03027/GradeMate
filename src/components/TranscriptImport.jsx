@@ -32,7 +32,15 @@ function TranscriptImport({ onAddMany }) {
         // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
         setBusyMsg("PDF 읽는 중…");
         const { extractPdfText } = await import("../utils/pdf.js");
-        extracted = await extractPdfText(file);
+        extracted = await extractPdfText(file, (status, progress, page, total) => {
+          // 글자 없는 PDF라 OCR로 넘어간 경우 진행률 표시
+          const pct = Math.round(progress * 100);
+          setBusyMsg(
+            total
+              ? `PDF 이미지 인식 중… (${page}/${total}쪽) ${pct}%`
+              : `PDF 읽는 중… ${pct}%`
+          );
+        });
       } else if ((file.type || "").startsWith("image/")) {
         // tesseract.js OCR도 무거워서 이미지 올릴 때만 동적으로 불러옴
         setBusyMsg("이미지 인식 준비 중…");
@@ -45,12 +53,22 @@ function TranscriptImport({ onAddMany }) {
         return;
       }
 
+      // 글자가 하나도 안 나온 경우 안내
+      if (!extracted || extracted.trim() === "") {
+        setFileError(
+          "파일에서 글자를 찾지 못했어요. 캡처 이미지로 올리거나, 포털에서 글자를 복사해 붙여넣어 주세요."
+        );
+        return;
+      }
+
       // 여러 장(예: 2페이지 성적표) 올릴 수 있게 기존 내용에 이어붙임
       setText((prev) => (prev.trim() ? prev + "\n" + extracted : extracted));
     } catch (err) {
       console.error(err);
+      // 실제 원인을 함께 보여줘서 진단이 쉽게 (예: Promise.withResolvers ...)
+      const reason = (err && err.message) || String(err);
       setFileError(
-        "파일에서 글자를 읽지 못했습니다. 스캔/사진 화질이 낮으면 인식이 어려울 수 있어요. 내용을 직접 복사해 붙여넣어 주세요."
+        `파일을 읽지 못했습니다: ${reason} — 브라우저를 최신으로 업데이트하거나, 캡처 이미지로 올리거나, 글자를 직접 붙여넣어 주세요.`
       );
     } finally {
       setBusy(false);

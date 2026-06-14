@@ -1,3 +1,4 @@
+import "./utils/polyfills.js"; // 다른 import보다 먼저! (pdf.js/OCR 호환용)
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
