@@ -66,7 +66,7 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
             </div>
           </div>
 
-          {/* 구분별 이수 / 필요 학점 */}
+          {/* 전공/교양 이수 / 필요 학점 */}
           <div className="grad-detail-cards">
             <div className="grad-detail-card">
               <p className="grad-detail-label">전공</p>
@@ -80,8 +80,8 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
             </div>
             <div className="grad-detail-card">
               <p className="grad-detail-label">자유</p>
-              <p className="grad-detail-value">{byCat.free}</p>
-              <p className="grad-detail-need">/ {req.free}</p>
+              <p className="grad-detail-value">{req.free}</p>
+              <p className="grad-detail-need">필요</p>
             </div>
             <div className="grad-detail-card">
               <p className="grad-detail-label">채플</p>
@@ -91,7 +91,7 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
           </div>
 
           <p className="grad-note">
-            ※ 전공/교양/자유 이수학점은 과목마다 설정한 구분으로 합산됩니다. 전공학점은
+            ※ 과목마다 "전공" 체크 여부로 전공/교양 학점을 합산합니다. 전공학점은
             단일전공(주전공) 기준이며, 자세한 건 학과에 문의하세요.
           </p>
         </div>

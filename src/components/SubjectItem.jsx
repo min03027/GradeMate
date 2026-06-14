@@ -1,8 +1,8 @@
 import { formatSemester } from "../utils/semester.js";
-import { CATEGORIES } from "../data/categories.js";
 
 // 과목 한 개 보여주는거
 function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
+  const isMajor = (subject.category || "major") === "major";
   return (
     <li className={"subject-item" + (subject.dropped ? " dropped" : "")}>
       <div className="subject-info">
@@ -11,18 +11,17 @@ function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
         )}
         <span className="subject-name">{subject.name}</span>
 
-        {/* 전공/교양/자유 구분 (바꿀 수 있음) */}
-        <select
-          className={"subject-cat cat-" + (subject.category || "major")}
-          value={subject.category || "major"}
-          onChange={(e) => onChangeCategory(subject.id, e.target.value)}
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+        {/* 전공 여부 (체크하면 전공, 해제하면 교양) */}
+        <label className={"subject-major" + (isMajor ? " on" : "")}>
+          <input
+            type="checkbox"
+            checked={isMajor}
+            onChange={(e) =>
+              onChangeCategory(subject.id, e.target.checked ? "major" : "liberal")
+            }
+          />
+          전공
+        </label>
 
         <span className="subject-detail">
           {subject.credit}학점 · {subject.grade}

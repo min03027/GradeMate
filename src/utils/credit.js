@@ -64,15 +64,14 @@ export function calcEarnedCredit(subjects) {
   return totalCredit;
 }
 
-// 구분(전공/교양/자유)별 이수학점 합계
+// 전공/교양 이수학점 합계 (전공이 아니면 모두 교양으로 합산)
 export function calcEarnedByCategory(subjects) {
   const earned = getValidSubjects(subjects).filter((s) => s.grade !== "F");
 
-  const sum = { major: 0, liberal: 0, free: 0 };
+  const sum = { major: 0, liberal: 0 };
   earned.forEach((s) => {
-    const cat =
-      s.category === "liberal" || s.category === "free" ? s.category : "major";
-    sum[cat] += s.credit;
+    if (s.category === "major" || !s.category) sum.major += s.credit;
+    else sum.liberal += s.credit;
   });
 
   return sum;

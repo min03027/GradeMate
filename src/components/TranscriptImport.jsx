@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { parseTranscript } from "../utils/transcript.js";
-import { CATEGORIES } from "../data/categories.js";
 
 // 미리보기 표에서 고를 수 있는 성적 (P = 패스과목, GPA엔 안 들어감)
 const gradeOptions = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
@@ -160,7 +159,7 @@ function TranscriptImport({ onAddMany }) {
             <div className="ti-table-head">
               <span className="ti-col-sem">학기</span>
               <span className="ti-col-name">과목명</span>
-              <span className="ti-col-cat">구분</span>
+              <span className="ti-col-cat">전공</span>
               <span className="ti-col-credit">학점</span>
               <span className="ti-col-grade">성적</span>
               <span className="ti-col-del"></span>
@@ -182,17 +181,15 @@ function TranscriptImport({ onAddMany }) {
                   onChange={(e) => updateRow(i, "name", e.target.value)}
                   placeholder="과목명"
                 />
-                <select
-                  className="ti-col-cat"
-                  value={row.category || "major"}
-                  onChange={(e) => updateRow(i, "category", e.target.value)}
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
+                <label className="ti-col-cat ti-cat-check">
+                  <input
+                    type="checkbox"
+                    checked={(row.category || "major") === "major"}
+                    onChange={(e) =>
+                      updateRow(i, "category", e.target.checked ? "major" : "liberal")
+                    }
+                  />
+                </label>
                 <input
                   className="ti-col-credit"
                   type="number"
