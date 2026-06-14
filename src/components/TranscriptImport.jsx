@@ -10,28 +10,52 @@ function TranscriptImport({ onAddMany }) {
   const [rows, setRows] = useState([]); // 분석 결과 (수정 가능)
   const [analyzed, setAnalyzed] = useState(false); // 분석 한번 했는지
   const [replace, setReplace] = useState(true); // 기존 과목 비우고 넣을지
-  const [loading, setLoading] = useState(false); // PDF 읽는 중
-  const [pdfError, setPdfError] = useState("");
+  const [busy, setBusy] = useState(false); // 파일에서 글자 뽑는 중
+  const [busyMsg, setBusyMsg] = useState(""); // 진행 상황 메시지
+  const [fileError, setFileError] = useState("");
 
-  // PDF 파일 선택했을 때 → 텍스트 추출해서 입력칸에 채움
-  const handlePdf = async (e) => {
+  // PDF/이미지 파일 선택했을 때 → 글자 추출해서 입력칸에 붙여줌
+  const handleFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setLoading(true);
-    setPdfError("");
+    setBusy(true);
+    setFileError("");
+    setBusyMsg("파일 읽는 중…");
+
     try {
-      // pdf.js는 용량이 커서 PDF 올릴 때만 동적으로 불러옴 (초기 로딩 가볍게)
-      const { extractPdfText } = await import("../utils/pdf.js");
-      const extracted = await extractPdfText(file);
-      setText(extracted);
+      let extracted = "";
+      const isPdf =
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf");
+
+      if (isPdf) {
+        // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
+        setBusyMsg("PDF 읽는 중…");
+        const { extractPdfText } = await import("../utils/pdf.js");
+        extracted = await extractPdfText(file);
+      } else if (file.type.startsWith("image/")) {
+        // tesseract.js OCR도 무거워서 이미지 올릴 때만 동적으로 불러옴
+        setBusyMsg("이미지 인식 준비 중…");
+        const { extractImageText } = await import("../utils/ocr.js");
+        extracted = await extractImageText(file, (status, progress) => {
+          setBusyMsg(`이미지 인식 중… ${Math.round(progress * 100)}%`);
+        });
+      } else {
+        setFileError("PDF 또는 이미지 파일을 선택해주세요.");
+        return;
+      }
+
+      // 여러 장(예: 2페이지 성적표) 올릴 수 있게 기존 내용에 이어붙임
+      setText((prev) => (prev.trim() ? prev + "\n" + extracted : extracted));
     } catch (err) {
       console.error(err);
-      setPdfError(
-        "PDF에서 글자를 읽지 못했습니다. (스캔본 PDF일 수 있어요) 내용을 직접 복사해 붙여넣어 주세요."
+      setFileError(
+        "파일에서 글자를 읽지 못했습니다. 스캔/사진 화질이 낮으면 인식이 어려울 수 있어요. 내용을 직접 복사해 붙여넣어 주세요."
       );
     } finally {
-      setLoading(false);
+      setBusy(false);
+      setBusyMsg("");
       e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
     }
   };
@@ -85,24 +109,25 @@ function TranscriptImport({ onAddMany }) {
       <h2>성적표 불러오기</h2>
 
       <p className="ti-help">
-        학교 포털이나 PDF 성적표의 과목 부분을 복사해 아래에 붙여넣거나, PDF 파일을
-        올리면 과목이 자동으로 정리됩니다.
+        성적표 PDF나 캡처 이미지를 올리면 과목이 자동으로 정리됩니다. 또는 학교
+        포털/PDF의 과목 부분을 복사해 아래에 직접 붙여넣어도 됩니다.
       </p>
 
-      {/* PDF 업로드 */}
+      {/* PDF / 이미지 업로드 */}
       <div className="ti-pdf-row">
         <label className="ti-pdf-button">
-          📄 PDF 파일 선택
+          📄 파일 선택 (PDF·이미지)
           <input
             type="file"
-            accept="application/pdf"
-            onChange={handlePdf}
+            accept="application/pdf,image/*"
+            onChange={handleFile}
+            disabled={busy}
             hidden
           />
         </label>
-        {loading && <span className="ti-loading">PDF 읽는 중…</span>}
+        {busy && <span className="ti-loading">{busyMsg}</span>}
       </div>
-      {pdfError && <p className="ti-error">{pdfError}</p>}
+      {fileError && <p className="ti-error">{fileError}</p>}
 
       {/* 텍스트 붙여넣기 */}
       <textarea
