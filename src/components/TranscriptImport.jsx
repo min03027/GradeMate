@@ -10,110 +10,39 @@ function TranscriptImport({ onAddMany }) {
   const [rows, setRows] = useState([]); // 분석 결과 (수정 가능)
   const [analyzed, setAnalyzed] = useState(false); // 분석 한번 했는지
   const [replace, setReplace] = useState(true); // 기존 과목 비우고 넣을지
-  const [busy, setBusy] = useState(false); // 파일에서 글자 뽑는 중
-  const [busyMsg, setBusyMsg] = useState(""); // 진행 상황 메시지
+  const [busy, setBusy] = useState(false); // PDF 읽는 중
   const [fileError, setFileError] = useState("");
 
-  // PDF/이미지 파일 1개에서 글자 추출해서 입력칸에 이어붙임 (파일선택/붙여넣기 공용)
-  const processFile = async (file) => {
+  // PDF 파일에서 글자 추출해서 입력칸에 이어붙임
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
     if (!file) return;
 
     setBusy(true);
     setFileError("");
-    setBusyMsg("파일 읽는 중…");
-
     try {
-      let extracted = "";
-      const name = (file.name || "").toLowerCase();
-      const type = file.type || "";
+      // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
+      const { extractPdfText } = await import("../utils/pdf.js");
+      const extracted = await extractPdfText(file);
 
-      const isPdf = type === "application/pdf" || name.endsWith(".pdf");
-      const isExcel =
-        name.endsWith(".xlsx") ||
-        name.endsWith(".xls") ||
-        name.endsWith(".csv") ||
-        type.includes("spreadsheet") ||
-        type.includes("excel") ||
-        type === "text/csv";
-
-      if (isPdf) {
-        // pdf.js는 용량이 커서 필요할 때만 동적으로 불러옴
-        setBusyMsg("PDF 읽는 중…");
-        const { extractPdfText } = await import("../utils/pdf.js");
-        extracted = await extractPdfText(file, (status, progress, page, total) => {
-          // 글자 없는 PDF라 OCR로 넘어간 경우 진행률 표시
-          const pct = Math.round(progress * 100);
-          setBusyMsg(
-            total
-              ? `PDF 이미지 인식 중… (${page}/${total}쪽) ${pct}%`
-              : `PDF 읽는 중… ${pct}%`
-          );
-        });
-      } else if (isExcel) {
-        // 엑셀도 라이브러리가 커서 필요할 때만 동적으로 불러옴
-        setBusyMsg("엑셀 읽는 중…");
-        const { extractExcelText } = await import("../utils/excel.js");
-        extracted = await extractExcelText(file);
-      } else if (type.startsWith("image/")) {
-        // tesseract.js OCR도 무거워서 이미지 올릴 때만 동적으로 불러옴
-        setBusyMsg("이미지 인식 준비 중…");
-        const { extractImageText } = await import("../utils/ocr.js");
-        extracted = await extractImageText(file, (status, progress) => {
-          setBusyMsg(`이미지 인식 중… ${Math.round(progress * 100)}%`);
-        });
-      } else {
-        setFileError("PDF · 이미지 · 엑셀(xlsx/xls/csv) 파일만 인식할 수 있어요.");
-        return;
-      }
-
-      // 글자가 하나도 안 나온 경우 안내
       if (!extracted || extracted.trim() === "") {
         setFileError(
-          "파일에서 글자를 찾지 못했어요. 캡처 이미지로 올리거나, 포털에서 글자를 복사해 붙여넣어 주세요."
+          "PDF에서 글자를 찾지 못했어요. (스캔/이미지 PDF일 수 있어요) 포털에서 글자를 복사해 붙여넣어 주세요."
         );
         return;
       }
-
-      // 여러 장(예: 2페이지 성적표) 올릴 수 있게 기존 내용에 이어붙임
+      // 여러 장 올릴 수 있게 기존 내용에 이어붙임
       setText((prev) => (prev.trim() ? prev + "\n" + extracted : extracted));
     } catch (err) {
       console.error(err);
-      // 실제 원인을 함께 보여줘서 진단이 쉽게 (예: Promise.withResolvers ...)
       const reason = (err && err.message) || String(err);
       setFileError(
-        `파일을 읽지 못했습니다: ${reason} — 브라우저를 최신으로 업데이트하거나, 캡처 이미지로 올리거나, 글자를 직접 붙여넣어 주세요.`
+        `PDF를 읽지 못했습니다: ${reason} — 포털에서 글자를 복사해 붙여넣어 주세요.`
       );
     } finally {
       setBusy(false);
-      setBusyMsg("");
+      e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
     }
-  };
-
-  // 파일 선택 버튼으로 올렸을 때
-  const handleFile = async (e) => {
-    await processFile(e.target.files[0]);
-    e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
-  };
-
-  // 입력칸에 붙여넣기(Ctrl/Cmd+V) 했을 때
-  // - 클립보드에 "이미지"가 있으면 (스크린샷 등) → OCR 처리
-  // - 일반 텍스트면 → 그냥 평소대로 붙여넣기
-  const handlePaste = (e) => {
-    if (busy) return;
-    const items = e.clipboardData && e.clipboardData.items;
-    if (!items) return;
-
-    for (const item of items) {
-      if (item.type && item.type.startsWith("image/")) {
-        const blob = item.getAsFile();
-        if (blob) {
-          e.preventDefault(); // 이미지는 텍스트영역에 안 들어가니 막고 OCR로
-          processFile(blob);
-          return;
-        }
-      }
-    }
-    // 이미지가 없으면 기본 텍스트 붙여넣기 동작 그대로 둠
   };
 
   // "분석하기" → 텍스트 파싱
@@ -134,7 +63,7 @@ function TranscriptImport({ onAddMany }) {
 
   // 빈 행 추가 (수기로 보충용)
   const addEmptyRow = () => {
-    setRows([...rows, { name: "", credit: 3, grade: "A+" }]);
+    setRows([...rows, { name: "", credit: 3, grade: "A+", semester: "" }]);
   };
 
   // "추가하기" → 유효한 행만 골라서 App에 넘김
@@ -144,6 +73,7 @@ function TranscriptImport({ onAddMany }) {
         name: String(r.name).trim(),
         credit: Number(r.credit),
         grade: r.grade,
+        semester: (r.semester || "").trim(),
       }))
       .filter((r) => r.name !== "" && r.credit > 0);
 
@@ -165,24 +95,24 @@ function TranscriptImport({ onAddMany }) {
       <h2>성적표 불러오기</h2>
 
       <p className="ti-help">
-        성적표 PDF·이미지·엑셀(xlsx/xls/csv)을 올리면 과목이 자동으로 정리됩니다.
-        이미지를 복사한 뒤 아래 입력칸에 <b>붙여넣기(Ctrl/⌘+V)</b> 해도 OCR로
-        인식돼요. 포털/PDF의 과목 글자를 복사해 붙여넣어도 됩니다.
+        포털·PDF 성적표의 과목 부분을 복사해 아래에 붙여넣거나, PDF 파일을 올리면
+        과목이 자동으로 정리됩니다. 학기 헤더(예: 2024 학년도 1 학기)가 같이
+        있으면 학기도 자동으로 채워져요.
       </p>
 
-      {/* PDF / 이미지 / 엑셀 업로드 */}
+      {/* PDF 업로드 */}
       <div className="ti-pdf-row">
         <label className="ti-pdf-button">
-          📄 파일 선택 (PDF·이미지·엑셀)
+          📄 PDF 파일 선택
           <input
             type="file"
-            accept="application/pdf,image/*,.xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+            accept="application/pdf,.pdf"
             onChange={handleFile}
             disabled={busy}
             hidden
           />
         </label>
-        {busy && <span className="ti-loading">{busyMsg}</span>}
+        {busy && <span className="ti-loading">PDF 읽는 중…</span>}
       </div>
       {fileError && <p className="ti-error">{fileError}</p>}
 
@@ -191,9 +121,8 @@ function TranscriptImport({ onAddMany }) {
         className="ti-textarea"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        onPaste={handlePaste}
         placeholder={
-          "여기에 성적표 글자를 붙여넣거나, 캡처 이미지를 붙여넣으세요(Ctrl/⌘+V).\n\n예시)\n자료구조  3  A+\n운영체제  3  B+\n현대사회와 윤리  2  P"
+          "여기에 성적표 글자를 붙여넣으세요.\n\n예시)\n자료구조  3  A+\n운영체제  3  B+\n현대사회와 윤리  2  P"
         }
         rows={6}
       />
@@ -223,6 +152,7 @@ function TranscriptImport({ onAddMany }) {
 
           <div className="ti-table">
             <div className="ti-table-head">
+              <span className="ti-col-sem">학기</span>
               <span className="ti-col-name">과목명</span>
               <span className="ti-col-credit">학점</span>
               <span className="ti-col-grade">성적</span>
@@ -231,6 +161,13 @@ function TranscriptImport({ onAddMany }) {
 
             {rows.map((row, i) => (
               <div className="ti-table-row" key={i}>
+                <input
+                  className="ti-col-sem"
+                  type="text"
+                  value={row.semester || ""}
+                  onChange={(e) => updateRow(i, "semester", e.target.value)}
+                  placeholder="2024-1"
+                />
                 <input
                   className="ti-col-name"
                   type="text"

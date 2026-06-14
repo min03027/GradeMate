@@ -11,7 +11,7 @@ function App() {
   const [subjects, setSubjects] = useState([]);
 
   // 과목 추가하는 함수 (Form에서 호출함)
-  const addSubject = (name, credit, grade) => {
+  const addSubject = (name, credit, grade, semester) => {
     // 같은 과목명이 이미 있으면 재수강으로 처리
     const isRetake = subjects.some((s) => s.name === name);
 
@@ -20,6 +20,7 @@ function App() {
       name: name,
       credit: Number(credit), // 숫자로 바꿔서 넣기
       grade: grade,
+      semester: semester || "", // 언제 들었는지
       retake: isRetake,
       dropped: false, // 처음엔 학점포기 아님
     };
@@ -42,6 +43,7 @@ function App() {
           name: item.name,
           credit: Number(item.credit),
           grade: item.grade,
+          semester: item.semester || "",
           retake: isRetake,
           dropped: false,
         });

@@ -99,6 +99,24 @@
   font-size: 14px;
 }
 
+/* 학기(연도+학기) / 학점+성적 묶음 */
+.semester-inputs,
+.credit-grade-inputs {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.semester-inputs select,
+.credit-grade-inputs input,
+.credit-grade-inputs select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d0d4dc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 .add-button {
   width: 100%;
   margin-top: 8px;
@@ -113,6 +131,13 @@
 
 .add-button:hover {
   background-color: #2f4ac0;
+}
+
+.form-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #999999;
+  text-align: center;
 }
 
 /* ---------- 결과(GPA) ---------- */
@@ -383,18 +408,23 @@
   padding: 0 2px;
 }
 
+.ti-col-sem {
+  width: 64px;
+  flex-shrink: 0;
+}
+
 .ti-col-name {
   flex: 1;
   min-width: 0;
 }
 
 .ti-col-credit {
-  width: 56px;
+  width: 48px;
   flex-shrink: 0;
 }
 
 .ti-col-grade {
-  width: 64px;
+  width: 60px;
   flex-shrink: 0;
 }
 
@@ -598,6 +628,15 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* 학기 라벨 (과목 항목에서) */
+.subject-sem {
+  font-size: 11px;
+  color: #3b5bdb;
+  background-color: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .subject-name {

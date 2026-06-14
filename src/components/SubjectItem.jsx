@@ -1,8 +1,13 @@
+import { formatSemester } from "../utils/semester.js";
+
 // 과목 한 개 보여주는거
 function SubjectItem({ subject, onDelete, onToggleDropped }) {
   return (
     <li className={"subject-item" + (subject.dropped ? " dropped" : "")}>
       <div className="subject-info">
+        {subject.semester && (
+          <span className="subject-sem">{formatSemester(subject.semester)}</span>
+        )}
         <span className="subject-name">{subject.name}</span>
         <span className="subject-detail">
           {subject.credit}학점 · {subject.grade}
