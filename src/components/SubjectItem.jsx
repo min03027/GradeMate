@@ -1,7 +1,8 @@
 import { formatSemester } from "../utils/semester.js";
+import { CATEGORIES } from "../data/categories.js";
 
 // 과목 한 개 보여주는거
-function SubjectItem({ subject, onDelete, onToggleDropped }) {
+function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
   return (
     <li className={"subject-item" + (subject.dropped ? " dropped" : "")}>
       <div className="subject-info">
@@ -9,6 +10,20 @@ function SubjectItem({ subject, onDelete, onToggleDropped }) {
           <span className="subject-sem">{formatSemester(subject.semester)}</span>
         )}
         <span className="subject-name">{subject.name}</span>
+
+        {/* 전공/교양/자유 구분 (바꿀 수 있음) */}
+        <select
+          className={"subject-cat cat-" + (subject.category || "major")}
+          value={subject.category || "major"}
+          onChange={(e) => onChangeCategory(subject.id, e.target.value)}
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+
         <span className="subject-detail">
           {subject.credit}학점 · {subject.grade}
         </span>

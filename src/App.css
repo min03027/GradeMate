@@ -581,6 +581,32 @@
   font-weight: 700;
 }
 
+/* 이수학기 행 */
+.grad-sem-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e6e3ff;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.grad-sem-row .sem-ok {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.grad-sem-row .sem-warn {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.grad-sem-row b {
+  font-size: 15px;
+}
+
 .grad-detail-cards {
   display: flex;
   gap: 8px;
@@ -607,6 +633,12 @@
   font-size: 18px;
   font-weight: 800;
   color: var(--ink);
+}
+
+.grad-detail-need {
+  margin-top: 1px;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .grad-note {
@@ -873,7 +905,7 @@
 }
 
 .ti-col-sem {
-  width: 62px;
+  width: 52px;
   flex-shrink: 0;
 }
 
@@ -882,13 +914,18 @@
   min-width: 0;
 }
 
+.ti-col-cat {
+  width: 56px;
+  flex-shrink: 0;
+}
+
 .ti-col-credit {
-  width: 46px;
+  width: 42px;
   flex-shrink: 0;
 }
 
 .ti-col-grade {
-  width: 58px;
+  width: 52px;
   flex-shrink: 0;
 }
 
@@ -1021,6 +1058,36 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--ink);
+}
+
+/* 과목 구분(전공/교양/자유) 셀렉트 */
+.subject-cat {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #f1f4f9;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.subject-cat.cat-major {
+  background: #eef0ff;
+  color: var(--primary);
+  border-color: #dcdfff;
+}
+
+.subject-cat.cat-liberal {
+  background: #fef3e8;
+  color: #c2410c;
+  border-color: #fcdcc0;
+}
+
+.subject-cat.cat-free {
+  background: #ecfdf3;
+  color: var(--ok);
+  border-color: #c5f0d3;
 }
 
 .subject-detail {

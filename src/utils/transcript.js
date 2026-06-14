@@ -87,10 +87,20 @@ function parseLine(line) {
     const name = cleanName(rawName);
     if (!name) continue;
 
-    courses.push({ name, credit, grade });
+    courses.push({ name, credit, grade, category: detectCategory(rawName) });
   }
 
   return courses;
+}
+
+// 이수구분 글자로 전공/교양/자유 추정 (cleanName 하기 전 원본에서 찾음)
+function detectCategory(raw) {
+  if (/(전공필수|전공선택|전기|전선|전필|부전공|부필|부선|복수전공|복필|복선|연계전공|연필|연선|교직)/.test(raw)) {
+    return "major";
+  }
+  if (/(교양필수|교양선택|교필|교선)/.test(raw)) return "liberal";
+  if (/(일반선택|일선)/.test(raw)) return "free";
+  return "major"; // 모르면 전공으로 (사용자가 고칠 수 있음)
 }
 
 // "2022 학년도 1 학기 (계절)" 같은 줄에서 학년도/학기를 뽑아냄 → {year, term}

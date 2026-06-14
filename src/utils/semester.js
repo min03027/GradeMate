@@ -35,3 +35,14 @@ export function gradeOptions(maxGrade = 4) {
   for (let g = 1; g <= maxGrade; g++) list.push(g);
   return list;
 }
+
+// 이수한 "정규학기" 수 (계절학기 제외, 서로 다른 학년-학기만 카운트)
+export function countRegularSemesters(subjects) {
+  const set = new Set();
+  subjects.forEach((s) => {
+    if (!s.semester) return;
+    const code = s.semester.split("-")[1]; // 학기 코드
+    if (code === "1" || code === "2") set.add(s.semester);
+  });
+  return set.size;
+}

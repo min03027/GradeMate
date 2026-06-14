@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { parseTranscript } from "../utils/transcript.js";
+import { CATEGORIES } from "../data/categories.js";
 
 // 미리보기 표에서 고를 수 있는 성적 (P = 패스과목, GPA엔 안 들어감)
 const gradeOptions = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
@@ -63,7 +64,10 @@ function TranscriptImport({ onAddMany }) {
 
   // 빈 행 추가 (수기로 보충용)
   const addEmptyRow = () => {
-    setRows([...rows, { name: "", credit: 3, grade: "A+", semester: "" }]);
+    setRows([
+      ...rows,
+      { name: "", credit: 3, grade: "A+", semester: "", category: "major" },
+    ]);
   };
 
   // "추가하기" → 유효한 행만 골라서 App에 넘김
@@ -74,6 +78,7 @@ function TranscriptImport({ onAddMany }) {
         credit: Number(r.credit),
         grade: r.grade,
         semester: (r.semester || "").trim(),
+        category: r.category || "major",
       }))
       // 이름 있고 학점이 0 이상인 숫자면 추가 (0학점 허용)
       .filter((r) => r.name !== "" && !isNaN(r.credit) && r.credit >= 0);
@@ -155,6 +160,7 @@ function TranscriptImport({ onAddMany }) {
             <div className="ti-table-head">
               <span className="ti-col-sem">학기</span>
               <span className="ti-col-name">과목명</span>
+              <span className="ti-col-cat">구분</span>
               <span className="ti-col-credit">학점</span>
               <span className="ti-col-grade">성적</span>
               <span className="ti-col-del"></span>
@@ -176,6 +182,17 @@ function TranscriptImport({ onAddMany }) {
                   onChange={(e) => updateRow(i, "name", e.target.value)}
                   placeholder="과목명"
                 />
+                <select
+                  className="ti-col-cat"
+                  value={row.category || "major"}
+                  onChange={(e) => updateRow(i, "category", e.target.value)}
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
                 <input
                   className="ti-col-credit"
                   type="number"

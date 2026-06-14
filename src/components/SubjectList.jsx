@@ -2,7 +2,7 @@ import SubjectItem from "./SubjectItem.jsx";
 import { semesterSortKey } from "../utils/semester.js";
 
 // 과목들 쭉 보여주는 곳
-function SubjectList({ subjects, onDelete, onToggleDropped }) {
+function SubjectList({ subjects, onDelete, onToggleDropped, onChangeCategory }) {
   // 학기 빠른 순으로 정렬 (학기 없는 건 맨 뒤). 원본은 안 건드리게 복사 후 정렬
   const sorted = [...subjects].sort((a, b) => {
     const ka = semesterSortKey(a.semester);
@@ -28,6 +28,7 @@ function SubjectList({ subjects, onDelete, onToggleDropped }) {
               subject={subject}
               onDelete={onDelete}
               onToggleDropped={onToggleDropped}
+              onChangeCategory={onChangeCategory}
             />
           ))}
         </ul>

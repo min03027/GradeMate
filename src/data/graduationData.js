@@ -129,6 +129,13 @@ export function getRequirement({ admission, deptId, transferYear, transferGrade 
   return null;
 }
 
+// 졸업에 필요한 이수학기 수 (건축 5년제 10학기, 약학 6년제 12학기, 그 외 8학기)
+export function requiredSemesters(deptId) {
+  if (deptId === "arch") return 10;
+  if (deptId === "pharm") return 12;
+  return 8;
+}
+
 // 이 학과가 cs계열인지 (편입 학번 입력칸 보여줄지 판단용)
 export function isCsGroup(deptId) {
   return groupOf(deptId) === "cs";

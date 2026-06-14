@@ -76,7 +76,7 @@ function App() {
   };
 
   // 과목 추가하는 함수 (Form에서 호출함)
-  const addSubject = (name, credit, grade, semester) => {
+  const addSubject = (name, credit, grade, semester, category) => {
     const isRetake = subjects.some((s) => s.name === name);
 
     const newSubject = {
@@ -85,6 +85,7 @@ function App() {
       credit: Number(credit),
       grade: grade,
       semester: semester || "",
+      category: category || "major",
       retake: isRetake,
       dropped: false,
     };
@@ -105,6 +106,7 @@ function App() {
           credit: Number(item.credit),
           grade: item.grade,
           semester: item.semester || "",
+          category: item.category || "major",
           retake: isRetake,
           dropped: false,
         });
@@ -123,6 +125,13 @@ function App() {
   const toggleDropped = (id) => {
     setSubjects(
       subjects.map((s) => (s.id === id ? { ...s, dropped: !s.dropped } : s))
+    );
+  };
+
+  // 과목 구분(전공/교양/자유) 변경
+  const changeCategory = (id, category) => {
+    setSubjects(
+      subjects.map((s) => (s.id === id ? { ...s, category } : s))
     );
   };
 
@@ -198,6 +207,7 @@ function App() {
           subjects={subjects}
           onDelete={deleteSubject}
           onToggleDropped={toggleDropped}
+          onChangeCategory={changeCategory}
         />
       </main>
 

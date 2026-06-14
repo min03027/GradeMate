@@ -1,14 +1,16 @@
 import { useRef, useState } from "react";
 import { TERMS, gradeOptions } from "../utils/semester.js";
+import { CATEGORIES } from "../data/categories.js";
 
 // 과목 직접 입력 폼
-// 학기/학점/성적은 추가 후에도 그대로 유지해서, 같은 학기 과목을 빠르게 연달아 넣을 수 있게 함
+// 학기/구분/학점/성적은 추가 후에도 그대로 유지해서, 비슷한 과목을 빠르게 연달아 넣을 수 있게 함
 function SubjectForm({ onAdd, maxGrade = 4 }) {
   const grades = gradeOptions(maxGrade); // [1, 2, 3, ...] 학년
 
   const [name, setName] = useState("");
   const [schoolYear, setSchoolYear] = useState("1"); // 1학년부터
   const [term, setTerm] = useState("1");
+  const [category, setCategory] = useState("major"); // 전공/교양/자유
   const [credit, setCredit] = useState("3");
   const [grade, setGrade] = useState("A+");
 
@@ -27,7 +29,7 @@ function SubjectForm({ onAdd, maxGrade = 4 }) {
     }
 
     const semester = `${schoolYear}-${term}`; // "1-1" = 1학년 1학기
-    onAdd(name.trim(), credit, grade, semester);
+    onAdd(name.trim(), credit, grade, semester, category);
 
     // 과목명만 비우고 학기/학점/성적은 유지 → 다음 과목 바로 입력
     setName("");
@@ -73,6 +75,18 @@ function SubjectForm({ onAdd, maxGrade = 4 }) {
           placeholder="예) 자료구조"
           autoFocus
         />
+      </div>
+
+      {/* 구분 (전공/교양/자유) */}
+      <div className="form-row">
+        <label>구분</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          {CATEGORIES.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* 학점 + 성적 한 줄에 */}
