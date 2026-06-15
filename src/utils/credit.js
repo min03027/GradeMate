@@ -1,5 +1,7 @@
 // 학점 계산 관련 공용 함수들 (GPAResult, GraduationRequirement 에서 같이 씀)
 
+import { semesterSortKey } from "./semester.js";
+
 // 성적별 점수표
 export const gradePointMap = {
   "A+": 4.5,
@@ -88,6 +90,39 @@ export function calcMajorGPA(subjects) {
     (s) => s.category === "major" || !s.category
   );
   return gpaOf(majors);
+}
+
+// 과목을 학기별로 묶기 → { semester, subjects } 배열 (학기 빠른 순, 미지정은 맨 뒤)
+export function groupBySemester(subjects) {
+  const map = {};
+  subjects.forEach((s) => {
+    const key = s.semester && s.semester.trim() ? s.semester : "";
+    if (!map[key]) map[key] = [];
+    map[key].push(s);
+  });
+
+  return Object.keys(map)
+    .sort((a, b) => {
+      const ka = semesterSortKey(a);
+      const kb = semesterSortKey(b);
+      return ka < kb ? -1 : ka > kb ? 1 : 0;
+    })
+    .map((semester) => ({ semester, subjects: map[semester] }));
+}
+
+// 학기별 평점 (선그래프용). 평점 낼 과목이 있는 학기만, 미지정 학기는 제외
+export function calcGPABySemester(subjects) {
+  return groupBySemester(subjects)
+    .filter((g) => g.semester) // 학기 미지정은 그래프에서 빼기
+    .map((g) => ({
+      semester: g.semester,
+      gpa: calcGPA(g.subjects),
+      // 평점 낼(점수 있는) 과목이 하나라도 있는 학기만
+      hasGraded: g.subjects.some(
+        (s) => !s.dropped && typeof gradePointMap[s.grade] === "number"
+      ),
+    }))
+    .filter((g) => g.hasGraded);
 }
 
 // 총 이수학점: F는 이수 못한거니까 빼고 학점만 더하기

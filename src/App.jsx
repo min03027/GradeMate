@@ -4,6 +4,7 @@ import Onboarding from "./components/Onboarding.jsx";
 import SubjectInput from "./components/SubjectInput.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
+import SemesterGPAChart from "./components/SemesterGPAChart.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
 import { getRequirement } from "./data/graduationData.js";
@@ -207,7 +208,10 @@ function App() {
         {/* 평균학점, 이수학점 결과 */}
         <GPAResult subjects={subjects} />
 
-        {/* 과목 목록 */}
+        {/* 학기별 평점 추이 선그래프 */}
+        <SemesterGPAChart subjects={subjects} />
+
+        {/* 과목 목록 (학기별 묶음) */}
         <SubjectList
           subjects={subjects}
           onDelete={deleteSubject}

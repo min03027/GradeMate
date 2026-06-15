@@ -85,7 +85,8 @@
 .subject-list,
 .grad-req,
 .transcript-import,
-.grad-check {
+.grad-check,
+.gpa-chart {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -98,7 +99,8 @@
 .subject-list h2,
 .grad-req h2,
 .transcript-import h2,
-.grad-check h2 {
+.grad-check h2,
+.gpa-chart h2 {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -1147,4 +1149,135 @@
 
 .delete-button:hover {
   background: #fecdd3;
+}
+
+/* =========================================================
+   학기별 평점 선그래프
+========================================================= */
+.gpa-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart-ylabel {
+  fill: var(--muted);
+  font-size: 11px;
+  text-anchor: end;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-dot {
+  fill: #fff;
+  stroke: var(--primary);
+  stroke-width: 2.5;
+}
+
+.chart-value {
+  fill: var(--ink);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.chart-xlabel {
+  fill: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.chart-xlabel.sub {
+  fill: var(--muted);
+  font-weight: 500;
+}
+
+/* =========================================================
+   학기별 과목 묶음 (접기/펼치기)
+========================================================= */
+.sem-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sem-group {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sem-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  background: #f8f9fe;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.sem-head:hover {
+  background: #f1f3fd;
+}
+
+.sem-caret {
+  font-size: 10px;
+  color: var(--muted);
+  transition: transform 0.18s ease;
+}
+
+.sem-caret.open {
+  transform: rotate(90deg);
+}
+
+.sem-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sem-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sem-gpa {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--ring);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.sem-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sem-body {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

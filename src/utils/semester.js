@@ -17,6 +17,24 @@ export function termLabel(code) {
   return code;
 }
 
+// 학기코드 → 짧은 라벨 (그래프 축 등 좁은 공간용)
+export function shortTermLabel(code) {
+  switch (code) {
+    case "1":
+      return "1학기";
+    case "2":
+      return "2학기";
+    case "1S":
+      return "여름";
+    case "2S":
+      return "겨울";
+    case "S":
+      return "계절";
+    default:
+      return code;
+  }
+}
+
 // "2-1" → "2학년 1학기"
 export function formatSemester(semester) {
   if (!semester) return "";
