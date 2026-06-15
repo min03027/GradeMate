@@ -8,6 +8,7 @@ import SemesterGPAChart from "./components/SemesterGPAChart.jsx";
 import SimulationCard from "./components/SimulationCard.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
+import SpecialGraduation from "./components/SpecialGraduation.jsx";
 import {
   getRequirement,
   getMajorPlan,
@@ -225,6 +226,9 @@ function App() {
           checklist={checklist}
           onChange={setChecklist}
         />
+
+        {/* 조기·우등 졸업 자격 점검 */}
+        <SpecialGraduation subjects={subjects} setup={effSetup} />
 
         {/* 과목 입력 (직접 입력 / 성적표 불러오기 탭) */}
         <SubjectInput

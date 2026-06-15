@@ -114,6 +114,24 @@ const BASIC_2015 = [
 ];
 const BASIC_2014 = BASIC_2015; // 2014도 학점 있는 필수과목은 2015와 동일 (나머지는 0학점 의무교육)
 
+// 조기졸업 최소 취득학점 (general 114 / cs 22학번부터 124 / 건축5년제 149)
+export function earlyGradCredit(setup) {
+  const group = groupOf(setup.deptId);
+  if (group === "arch") return 149;
+  if (group === "cs") {
+    return setup.entranceYear != null && setup.entranceYear >= 22 ? 124 : 114;
+  }
+  return 114;
+}
+
+// 조기졸업 이수학기 상한 (건축 5년제 9학기 / 그 외 7학기)
+export function earlyGradSemesters(deptId) {
+  return groupOf(deptId) === "arch" ? 9 : 7;
+}
+
+// 조기·우등 졸업 공통 평점 기준
+export const HONOR_GPA = 4.2;
+
 // 학번(입학연도 2자리)에 맞는 기초교양 필수과목 목록
 export function basicLiberalCourses(entranceYear) {
   const yy = entranceYear;
