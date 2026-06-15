@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { gpaStats, simulateTargetGPA } from "../utils/credit.js";
+import { gpaStats, simulateTargetGPA, gradePointMap } from "../utils/credit.js";
 
 // 목표 평점 시뮬레이션 (입력값은 실제 학점에 저장되지 않음)
 const PRESETS = [4.5, 4.0, 3.5, 3.0];
+// 직접 조합에 쓸 성적들
+const MIX_GRADES = ["A+", "A", "B+", "B", "C+", "C"];
 
 function SimulationCard({ subjects }) {
   const [target, setTarget] = useState("");
   const [creditPerCourse, setCreditPerCourse] = useState(3);
+  // 직접 조합: 성적별 과목 수 { "A+": 0, "A": 0, ... }
+  const [mix, setMix] = useState({});
 
-  const { gpa: currentGPA, gpaCredit } = gpaStats(subjects);
+  const { gpa: currentGPA, gpaCredit, totalPoint } = gpaStats(subjects);
   const hasGrades = gpaCredit > 0;
 
   const targetNum = parseFloat(target);
@@ -16,6 +20,28 @@ function SimulationCard({ subjects }) {
   const sim = valid
     ? simulateTargetGPA(subjects, targetNum, creditPerCourse)
     : null;
+
+  // 직접 조합 결과: 추가 과목 반영한 예상 평점
+  const bumpMix = (g, delta) =>
+    setMix((prev) => {
+      const next = Math.max(0, (prev[g] || 0) + delta);
+      return { ...prev, [g]: next };
+    });
+  const resetMix = () => setMix({});
+
+  let addPoint = 0;
+  let addCredit = 0;
+  let addCount = 0;
+  MIX_GRADES.forEach((g) => {
+    const n = mix[g] || 0;
+    addCount += n;
+    addCredit += n * creditPerCourse;
+    addPoint += gradePointMap[g] * n * creditPerCourse;
+  });
+  const projTotalCredit = gpaCredit + addCredit;
+  const projGPA =
+    projTotalCredit === 0 ? null : (totalPoint + addPoint) / projTotalCredit;
+  const projMeetsTarget = valid && projGPA !== null && projGPA >= targetNum;
 
   return (
     <div className="sim-card">
@@ -121,6 +147,73 @@ function SimulationCard({ subjects }) {
           </p>
         </div>
       )}
+
+      {/* ── 직접 조합 ── */}
+      <div className="sim-mix">
+        <div className="sim-mix-head">
+          <h3>직접 조합해보기</h3>
+          {addCount > 0 && (
+            <button type="button" className="sim-mix-reset" onClick={resetMix}>
+              초기화
+            </button>
+          )}
+        </div>
+        <p className="sim-mix-desc">
+          A+를 줄이고 A를 늘리는 식으로 직접 조합해서 예상 평점을 확인해 보세요.
+        </p>
+
+        <div className="sim-mix-grid">
+          {MIX_GRADES.map((g) => (
+            <div className="sim-mix-row" key={g}>
+              <span className="sim-mix-grade">{g}</span>
+              <div className="sim-stepper">
+                <button
+                  type="button"
+                  onClick={() => bumpMix(g, -1)}
+                  disabled={(mix[g] || 0) === 0}
+                  aria-label={g + " 줄이기"}
+                >
+                  −
+                </button>
+                <span className="sim-mix-num">{mix[g] || 0}</span>
+                <button
+                  type="button"
+                  onClick={() => bumpMix(g, 1)}
+                  aria-label={g + " 늘리기"}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div
+          className={
+            "sim-proj" +
+            (valid ? (projMeetsTarget ? " ok" : " no") : "")
+          }
+        >
+          <div className="sim-proj-main">
+            <span className="sim-proj-label">예상 평점</span>
+            <span className="sim-proj-value">
+              {projGPA === null ? "—" : projGPA.toFixed(2)}
+            </span>
+          </div>
+          <div className="sim-proj-sub">
+            추가 {addCount}과목 · {addCredit}학점
+            {valid && projGPA !== null && (
+              <span className="sim-proj-judge">
+                {projMeetsTarget
+                  ? ` · 목표 ${targetNum.toFixed(2)} 달성 ✓`
+                  : ` · 목표 ${targetNum.toFixed(2)}까지 ${(
+                      targetNum - projGPA
+                    ).toFixed(2)} 부족`}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

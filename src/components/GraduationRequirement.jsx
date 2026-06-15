@@ -2,9 +2,15 @@ import {
   departments,
   admissionTypes,
   getRequirement,
+  getMajorPlan,
   requiredSemesters,
+  MULTI_REQS,
 } from "../data/graduationData.js";
-import { calcEarnedCredit, calcEarnedByCategory } from "../utils/credit.js";
+import {
+  calcEarnedCredit,
+  calcEarnedByCategory,
+  calcGPA,
+} from "../utils/credit.js";
 import { countRegularSemesters } from "../utils/semester.js";
 
 // id로 한글 라벨 찾기
@@ -16,13 +22,21 @@ function labelOf(list, id) {
 // 선택한 입학유형/학과 기준 졸업요건을 보여주는 곳 (선택은 첫 화면에서 함)
 function GraduationRequirement({ setup, subjects, onEdit }) {
   const req = getRequirement(setup);
+  const plan = getMajorPlan(setup); // {type, typeLabel, primary, second, secondName}
+  const isMulti = plan && plan.type !== "single";
   const earned = calcEarnedCredit(subjects);
-  const byCat = calcEarnedByCategory(subjects); // {major, liberal, free}
+  const byCat = calcEarnedByCategory(subjects); // {major, second, liberal, free}
   const percent = req ? Math.min(100, Math.round((earned / req.total) * 100)) : 0;
 
   // 이수학기
   const semDone = countRegularSemesters(subjects);
   const semNeed = requiredSemesters(setup.deptId);
+
+  // 다전공 신청 자격 체크 (이수학기·평점)
+  const gpa = calcGPA(subjects);
+  const multiReq = isMulti ? MULTI_REQS[plan.type] : null;
+  const eligOk =
+    multiReq && semDone >= multiReq.semesters && gpa >= multiReq.gpa;
 
   return (
     <div className="grad-req">
@@ -37,6 +51,12 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
       <div className="grad-setup-summary">
         <span className="grad-chip">{labelOf(admissionTypes, setup.admission)}</span>
         <span className="grad-chip">{labelOf(departments, setup.deptId)}</span>
+        {isMulti && (
+          <span className="grad-chip multi">
+            {plan.typeLabel}
+            {plan.secondName ? ` · ${plan.secondName}` : ""}
+          </span>
+        )}
       </div>
 
       {req ? (
@@ -66,13 +86,28 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
             </div>
           </div>
 
-          {/* 전공/교양 이수 / 필요 학점 */}
+          {/* 구분별 이수 / 필요 학점 */}
           <div className="grad-detail-cards">
-            <div className="grad-detail-card">
-              <p className="grad-detail-label">전공</p>
-              <p className="grad-detail-value">{byCat.major}</p>
-              <p className="grad-detail-need">/ {req.major}</p>
-            </div>
+            {isMulti ? (
+              <>
+                <div className="grad-detail-card">
+                  <p className="grad-detail-label">주전공</p>
+                  <p className="grad-detail-value">{byCat.major}</p>
+                  <p className="grad-detail-need">/ {plan.primary}</p>
+                </div>
+                <div className="grad-detail-card">
+                  <p className="grad-detail-label">{plan.typeLabel}</p>
+                  <p className="grad-detail-value">{byCat.second}</p>
+                  <p className="grad-detail-need">/ {plan.second}</p>
+                </div>
+              </>
+            ) : (
+              <div className="grad-detail-card">
+                <p className="grad-detail-label">전공</p>
+                <p className="grad-detail-value">{byCat.major}</p>
+                <p className="grad-detail-need">/ {req.major}</p>
+              </div>
+            )}
             <div className="grad-detail-card">
               <p className="grad-detail-label">교양</p>
               <p className="grad-detail-value">{byCat.liberal}</p>
@@ -90,9 +125,30 @@ function GraduationRequirement({ setup, subjects, onEdit }) {
             </div>
           </div>
 
+          {/* 다전공 신청 자격 안내 */}
+          {isMulti && multiReq && (
+            <div className={"grad-elig" + (eligOk ? " ok" : "")}>
+              <span className="grad-elig-title">
+                {plan.typeLabel} 신청 자격
+              </span>
+              <span className="grad-elig-body">
+                {multiReq.semesters}학기 이상
+                {multiReq.gpa > 0 ? ` · 평점 ${multiReq.gpa.toFixed(1)} 이상` : ""}
+                {" → "}
+                <b>{eligOk ? "충족 ✓" : "미충족"}</b>
+                <span className="grad-elig-now">
+                  {" "}
+                  (현재 {semDone}학기 · 평점 {gpa.toFixed(2)})
+                </span>
+              </span>
+            </div>
+          )}
+
           <p className="grad-note">
-            ※ 과목마다 "전공" 체크 여부로 전공/교양 학점을 합산합니다. 전공학점은
-            단일전공(주전공) 기준이며, 자세한 건 학과에 문의하세요.
+            ※ 과목마다 구분(주전공/{isMulti ? "다전공/" : ""}교양)을 골라 학점을
+            합산합니다. {isMulti ? "다전공 과목은 \"다전공\"으로 표시하세요. " : ""}
+            전공학점·다전공 학점은 학교 기본표 기준이며, 학과/학번별로 다를 수
+            있으니 자세한 건 학과에 문의하세요.
           </p>
         </div>
       ) : (

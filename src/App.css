@@ -614,12 +614,13 @@
 
 .grad-detail-cards {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
 }
 
 .grad-detail-card {
-  flex: 1;
+  flex: 1 1 80px;
   text-align: center;
   background: #f8fafc;
   border: 1px solid var(--line);
@@ -1474,4 +1475,283 @@
   font-size: 12px;
   color: var(--muted);
   line-height: 1.5;
+}
+
+/* 시뮬레이션 - 직접 조합 */
+.sim-mix {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+
+.sim-mix-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sim-mix-head h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sim-mix-reset {
+  font-size: 12px;
+  color: var(--muted);
+  background: #f1f3fd;
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.sim-mix-desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 4px 0 12px;
+}
+
+.sim-mix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.sim-mix-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.sim-mix-grade {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.sim-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sim-stepper button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  background: #eef1f8;
+  transition: background 0.15s ease;
+}
+
+.sim-stepper button:hover {
+  background: #e0e5f6;
+}
+
+.sim-stepper button:disabled {
+  color: var(--muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sim-mix-num {
+  min-width: 22px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sim-proj {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f8f9fe;
+  border: 1px solid var(--line);
+}
+
+.sim-proj.ok {
+  background: #ecfdf3;
+  border-color: #b7eccb;
+}
+
+.sim-proj.no {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.sim-proj-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sim-proj-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.sim-proj-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.sim-proj.ok .sim-proj-value {
+  color: var(--ok);
+}
+
+.sim-proj.no .sim-proj-value {
+  color: var(--warn);
+}
+
+.sim-proj-sub {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.sim-proj-judge {
+  font-weight: 600;
+}
+
+/* 온보딩 - 다전공 전공명 입력 / 미리보기 보조문구 */
+.onb-second {
+  margin-top: 10px;
+}
+
+.onb-second input {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.onb-second input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.onb-preview-sub {
+  flex-basis: 100%;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* 졸업요건 - 다전공 칩 / 신청자격 */
+.grad-chip.multi {
+  color: var(--primary);
+  background: var(--ring);
+}
+
+.grad-elig {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  font-size: 12.5px;
+}
+
+.grad-elig.ok {
+  background: #ecfdf3;
+  border-color: #b7eccb;
+}
+
+.grad-elig-title {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.grad-elig-body {
+  color: var(--ink-2);
+}
+
+.grad-elig-now {
+  color: var(--muted);
+}
+
+/* 과목 수정 버튼 / 수정 모드 */
+.edit-button {
+  background: #eef1f8;
+  color: var(--ink-2);
+}
+
+.edit-button:hover {
+  background: #e0e5f6;
+}
+
+.subject-item.editing {
+  display: block;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.subject-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subject-edit-row {
+  display: flex;
+  gap: 8px;
+}
+
+.subject-edit-row select,
+.subject-edit-row input,
+.subject-edit-name {
+  flex: 1;
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.subject-edit-row select:focus,
+.subject-edit-row input:focus,
+.subject-edit-name:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.subject-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.subject-edit-actions button {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.save-button {
+  color: #fff;
+  background: var(--primary);
+}
+
+.cancel-button {
+  color: var(--ink-2);
+  background: #eef1f8;
 }

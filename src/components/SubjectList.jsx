@@ -4,7 +4,15 @@ import { formatSemester } from "../utils/semester.js";
 import { groupBySemester, calcGPA, gradePointMap } from "../utils/credit.js";
 
 // 과목들을 학기별로 묶어서 접고 펼 수 있게 보여주는 곳
-function SubjectList({ subjects, onDelete, onToggleDropped, onChangeCategory }) {
+function SubjectList({
+  subjects,
+  onDelete,
+  onToggleDropped,
+  onChangeCategory,
+  onEdit,
+  hasSecondMajor,
+  maxGrade,
+}) {
   // 접힌(collapsed) 학기들 모음. 기본은 다 펼친 상태
   const [collapsed, setCollapsed] = useState({});
   const toggle = (key) =>
@@ -64,6 +72,9 @@ function SubjectList({ subjects, onDelete, onToggleDropped, onChangeCategory }) 
                         onDelete={onDelete}
                         onToggleDropped={onToggleDropped}
                         onChangeCategory={onChangeCategory}
+                        onEdit={onEdit}
+                        hasSecondMajor={hasSecondMajor}
+                        maxGrade={maxGrade}
                       />
                     ))}
                   </ul>

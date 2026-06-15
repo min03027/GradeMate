@@ -8,7 +8,7 @@ import SemesterGPAChart from "./components/SemesterGPAChart.jsx";
 import SimulationCard from "./components/SimulationCard.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
-import { getRequirement } from "./data/graduationData.js";
+import { getRequirement, getMajorPlan } from "./data/graduationData.js";
 import { isRepeatableCourse } from "./utils/credit.js";
 import {
   loadProfile,
@@ -128,6 +128,13 @@ function App() {
     setSubjects(subjects.filter((s) => s.id !== id));
   };
 
+  // 과목 수정 (학점/성적/과목명/학기 잘못 넣었을 때 고치기)
+  const editSubject = (id, fields) => {
+    setSubjects(
+      subjects.map((s) => (s.id === id ? { ...s, ...fields } : s))
+    );
+  };
+
   // 학점포기 토글
   const toggleDropped = (id) => {
     setSubjects(
@@ -162,6 +169,8 @@ function App() {
 
   // 3) 메인
   const requirement = getRequirement(setup);
+  const majorPlan = getMajorPlan(setup);
+  const hasSecondMajor = !!(majorPlan && majorPlan.type !== "single");
   // 1~6학년 모두 선택 가능 (건축 5년제·약학 6년제 등 대비)
   const maxGrade = 6;
 
@@ -204,6 +213,7 @@ function App() {
           onAdd={addSubject}
           onAddMany={addManySubjects}
           maxGrade={maxGrade}
+          hasSecondMajor={hasSecondMajor}
         />
 
         {/* 평균학점, 이수학점 결과 */}
@@ -221,6 +231,9 @@ function App() {
           onDelete={deleteSubject}
           onToggleDropped={toggleDropped}
           onChangeCategory={changeCategory}
+          onEdit={editSubject}
+          hasSecondMajor={hasSecondMajor}
+          maxGrade={maxGrade}
         />
       </main>
 

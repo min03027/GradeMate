@@ -179,14 +179,17 @@ export function simulateTargetGPA(subjects, target, creditPerCourse = 3) {
   return { currentGPA: gpa, hasGrades: gpaCredit > 0, alreadyMet, results };
 }
 
-// 전공/교양 이수학점 합계 (전공이 아니면 모두 교양으로 합산)
+// 구분별 이수학점 합계 (주전공/다전공/교양/자유)
 export function calcEarnedByCategory(subjects) {
   const earned = getValidSubjects(subjects).filter((s) => s.grade !== "F");
 
-  const sum = { major: 0, liberal: 0 };
+  const sum = { major: 0, second: 0, liberal: 0, free: 0 };
   earned.forEach((s) => {
-    if (s.category === "major" || !s.category) sum.major += s.credit;
-    else sum.liberal += s.credit;
+    const c = s.category || "major";
+    if (c === "second") sum.second += s.credit;
+    else if (c === "liberal") sum.liberal += s.credit;
+    else if (c === "free") sum.free += s.credit;
+    else sum.major += s.credit; // major 또는 미지정
   });
 
   return sum;

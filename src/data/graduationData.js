@@ -19,6 +19,49 @@ export const admissionTypes = [
   { id: "change", label: "전과" },
 ];
 
+// 다전공(전공 이수 형태) 목록
+export const multiTypes = [
+  { id: "single", label: "단일전공" },
+  { id: "double", label: "복수전공" },
+  { id: "minor", label: "부전공" },
+  { id: "linked", label: "연계전공" },
+  { id: "micro", label: "마이크로전공" },
+];
+
+// 다전공(주전공 외) 이수학점 (학교 기본표 기준)
+// 단일전공 주전공 학점에서 이 값을 빼면 다전공 시 주전공 학점이 됨
+// 예) 인공지능 단일 85 → 복수전공이면 주전공 85-36=49, 복수전공 36
+const SECOND_CREDITS = { single: 0, double: 36, minor: 21, linked: 36, micro: 12 };
+
+// 다전공 신청 자격 (이수학기/평점). 마이크로는 평점 제한 없음
+export const MULTI_REQS = {
+  double: { semesters: 4, gpa: 2.5 },
+  minor: { semesters: 1, gpa: 2.5 },
+  linked: { semesters: 2, gpa: 2.5 },
+  micro: { semesters: 1, gpa: 0 },
+};
+
+// 연계전공 목록 (참고용)
+export const linkedMajors = [
+  "미디어콘텐츠", "외식산업경영", "운동재활", "정원디자인",
+  "한류콘텐츠", "SW중독심리", "SW중독재활", "보건빅데이터",
+];
+
+// 마이크로전공 목록 (참고용)
+export const microMajors = [
+  "외국인을 위한 한국어 과정", "항공서비스", "금연상담", "건강영양",
+  "바이오의약", "데이터사이언스", "반도체", "AI·빅데이터분석",
+  "백엔드SW개발", "시각미디어디자인", "사회복지기초", "스마트팜",
+  "보건빅데이터", "스마트헬스케어", "글로컬리더십", "크리에이티브 컨버젼스",
+  "기능성화장품", "바이오식품", "바이오의약품", "싱어송라이팅", "그린디자인",
+];
+
+// 다전공 신청 불가 학과 (간호·물리치료·약학·유아교육·건축5년제 등)
+// 이 앱 학과 목록 기준: 건축(arch)·약학(pharm)은 신청 불가
+export function allowsMultiMajor(deptId) {
+  return deptId !== "arch" && deptId !== "pharm";
+}
+
 // 편입 cs계열 학번 선택지 (학번에 따라 졸업학점이 다름)
 export const transferYears = [
   { id: "from23", label: "23학번 이후" },
@@ -127,6 +170,34 @@ export function getRequirement({ admission, deptId, transferYear, transferGrade 
   }
 
   return null;
+}
+
+// 전공 이수 계획: 단일/다전공에 따라 주전공·다전공 학점을 나눠서 돌려줌
+// { type, typeLabel, primary, second, secondName }
+export function getMajorPlan(setup) {
+  const req = getRequirement(setup);
+  if (!req) return null;
+
+  const type = (setup && setup.multiType) || "single";
+  const single = req.major; // 단일전공(주전공) 학점
+
+  // 단일전공이거나 다전공 불가 학과면 그냥 단일
+  if (type === "single" || !allowsMultiMajor(setup.deptId)) {
+    return { type: "single", typeLabel: "단일전공", primary: single, second: 0 };
+  }
+
+  const second = SECOND_CREDITS[type] || 0;
+  const primary = Math.max(0, single - second);
+  const typeLabel =
+    (multiTypes.find((t) => t.id === type) || {}).label || type;
+
+  return {
+    type,
+    typeLabel,
+    primary,
+    second,
+    secondName: (setup && setup.secondMajorName) || "",
+  };
 }
 
 // 졸업에 필요한 이수학기 수 (건축 5년제 10학기, 약학 6년제 12학기, 그 외 8학기)

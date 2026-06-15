@@ -4,9 +4,14 @@ import {
   admissionTypes,
   transferYears,
   transferGrades,
+  multiTypes,
+  linkedMajors,
+  microMajors,
   getRequirement,
+  getMajorPlan,
   isCsGroup,
   changeNeedsGrade,
+  allowsMultiMajor,
 } from "../data/graduationData.js";
 
 // 첫 화면: 입학유형 + 학과(계열)을 고르고 시작
@@ -21,13 +26,39 @@ function Onboarding({ initial, onComplete }) {
   const [transferGrade, setTransferGrade] = useState(
     (initial && initial.transferGrade) || "2"
   );
+  const [multiType, setMultiType] = useState(
+    (initial && initial.multiType) || "single"
+  );
+  const [secondMajorName, setSecondMajorName] = useState(
+    (initial && initial.secondMajorName) || ""
+  );
 
   const showTransferYear = admission === "transfer" && isCsGroup(deptId);
   const showTransferGrade = admission === "change" && changeNeedsGrade(deptId);
-  const req = getRequirement({ admission, deptId, transferYear, transferGrade });
+  const canMulti = allowsMultiMajor(deptId);
+  // 다전공 불가 학과면 단일전공으로 강제
+  const effMultiType = canMulti ? multiType : "single";
+  const setup = {
+    admission,
+    deptId,
+    transferYear,
+    transferGrade,
+    multiType: effMultiType,
+    secondMajorName,
+  };
+  const req = getRequirement(setup);
+  const plan = getMajorPlan(setup);
+
+  // 연계/마이크로전공은 학교 지정 목록이 있어 추천 제공
+  const suggestions =
+    effMultiType === "linked"
+      ? linkedMajors
+      : effMultiType === "micro"
+        ? microMajors
+        : [];
 
   const handleStart = () => {
-    onComplete({ admission, deptId, transferYear, transferGrade });
+    onComplete(setup);
   };
 
   return (
@@ -111,11 +142,59 @@ function Onboarding({ initial, onComplete }) {
           </div>
         )}
 
+        {/* 다전공 (전공 이수 형태) */}
+        {canMulti && (
+          <div className="onb-section">
+            <p className="onb-label">전공 이수 형태</p>
+            <div className="opt-grid">
+              {multiTypes.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  className={"opt-card" + (effMultiType === m.id ? " active" : "")}
+                  onClick={() => setMultiType(m.id)}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 다전공이면 전공명(선택) 입력 */}
+            {effMultiType !== "single" && (
+              <div className="onb-second">
+                <input
+                  type="text"
+                  value={secondMajorName}
+                  onChange={(e) => setSecondMajorName(e.target.value)}
+                  placeholder={
+                    suggestions.length
+                      ? "다전공 선택 (예: " + suggestions[0] + ")"
+                      : "다전공 학과/전공명 (선택)"
+                  }
+                  list="second-major-list"
+                />
+                {suggestions.length > 0 && (
+                  <datalist id="second-major-list">
+                    {suggestions.map((s) => (
+                      <option key={s} value={s} />
+                    ))}
+                  </datalist>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 졸업학점 미리보기 */}
         {req ? (
           <div className="onb-preview">
             <span>졸업 필요 학점</span>
             <strong>{req.total}학점</strong>
+            {plan && plan.type !== "single" && (
+              <span className="onb-preview-sub">
+                주전공 {plan.primary} · {plan.typeLabel} {plan.second}학점
+              </span>
+            )}
           </div>
         ) : (
           <p className="onb-warn">
