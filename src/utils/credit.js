@@ -62,21 +62,31 @@ export function getValidSubjects(subjects) {
   return getLatestSubjects(subjects).filter((s) => !s.dropped);
 }
 
-// 주어진 과목들로 평균학점 계산: (점수 * 학점) 다 더해서 / 학점합
-function gpaOf(targets) {
+// 주어진 과목들의 평점 합계 구하기 (누적 점수·학점·평점)
+// P(패스)처럼 평점 없는 과목은 제외
+function gpaSum(targets) {
   let totalPoint = 0;
   let gpaCredit = 0;
 
   targets.forEach((s) => {
     const point = gradePointMap[s.grade];
-    // P(패스) 처럼 평점이 없는 과목은 GPA 계산에서 제외
     if (typeof point !== "number") return;
     totalPoint += point * s.credit;
     gpaCredit += s.credit;
   });
 
   // 과목 없을때 0으로 나누면 NaN 떠서 막아줌
-  return gpaCredit === 0 ? 0 : totalPoint / gpaCredit;
+  const gpa = gpaCredit === 0 ? 0 : totalPoint / gpaCredit;
+  return { totalPoint, gpaCredit, gpa };
+}
+
+function gpaOf(targets) {
+  return gpaSum(targets).gpa;
+}
+
+// 현재 평점 누적치 (시뮬레이션 등에서 현재 점수·학점이 필요할 때)
+export function gpaStats(subjects) {
+  return gpaSum(getValidSubjects(subjects));
 }
 
 // 전체 평균학점(GPA)
@@ -135,6 +145,38 @@ export function calcEarnedCredit(subjects) {
   });
 
   return totalCredit;
+}
+
+// 목표 평점 도달에 필요한 "성적별 최소 과목 수" 시뮬레이션
+// 실제 과목/학점 데이터는 안 건드리고 계산만 함 (저장 X)
+// 가정: 앞으로 듣는 과목을 전부 같은 성적으로 받고, 한 과목당 creditPerCourse 학점
+export function simulateTargetGPA(subjects, target, creditPerCourse = 3) {
+  const { totalPoint, gpaCredit, gpa } = gpaStats(subjects);
+  const alreadyMet = gpaCredit > 0 && gpa >= target;
+
+  // 시뮬레이션에 쓸 성적들 (높은 순)
+  const GRADES = [
+    { grade: "A+", point: 4.5 },
+    { grade: "A", point: 4.0 },
+    { grade: "B+", point: 3.5 },
+    { grade: "B", point: 3.0 },
+  ];
+
+  const results = GRADES.map(({ grade, point }) => {
+    // 이미 목표 넘었으면 더 들을 필요 없음
+    if (alreadyMet) return { grade, point, count: 0, possible: true };
+
+    // 목표보다 낮거나 같은 성적만으론 평균을 목표까지 못 끌어올림
+    if (point <= target) return { grade, point, count: null, possible: false };
+
+    // (현재점수 + point*c*k) / (현재학점 + c*k) >= target  →  k 풀기
+    const need = target * gpaCredit - totalPoint; // 부족한 (평점*학점)
+    let k = Math.ceil(need / (creditPerCourse * (point - target)));
+    if (k < 1) k = 1; // 최소 1과목
+    return { grade, point, count: k, possible: true };
+  });
+
+  return { currentGPA: gpa, hasGrades: gpaCredit > 0, alreadyMet, results };
 }
 
 // 전공/교양 이수학점 합계 (전공이 아니면 모두 교양으로 합산)

@@ -5,6 +5,7 @@ import SubjectInput from "./components/SubjectInput.jsx";
 import SubjectList from "./components/SubjectList.jsx";
 import GPAResult from "./components/GPAResult.jsx";
 import SemesterGPAChart from "./components/SemesterGPAChart.jsx";
+import SimulationCard from "./components/SimulationCard.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
 import { getRequirement } from "./data/graduationData.js";
@@ -210,6 +211,9 @@ function App() {
 
         {/* 학기별 평점 추이 선그래프 */}
         <SemesterGPAChart subjects={subjects} />
+
+        {/* 목표 평점 시뮬레이션 (저장 안 됨) */}
+        <SimulationCard subjects={subjects} />
 
         {/* 과목 목록 (학기별 묶음) */}
         <SubjectList
