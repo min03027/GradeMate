@@ -97,15 +97,17 @@ const FRESHMAN = {
 
 // ---------- 편입학 졸업요건 (3학년 편입 기준) ----------
 // cs계열은 학번에 따라 총 졸업학점이 다름(totalByYear)
+// (2025.07.24 학사지원팀 졸업이수요건 안내 표 기준: 3-1 편입)
 const TRANSFER = {
-  general: { total: 65, liberal: 6, major: 51, free: "0~11", chapel: 3 },
+  general: { total: 68, liberal: 6, major: 51, free: "0~11", chapel: 3 },
   cs: {
     total: null,
     liberal: 6,
     major: 61,
     free: "0~5",
     chapel: 3,
-    totalByYear: { upTo21: 65, y22: 72, from23: 75 },
+    // 22학번부터 140학점 체계 → 72학점. 21학번 이하는 130 체계(근사)
+    totalByYear: { upTo21: 65, y22: 72, from23: 72 },
   },
   arch: { total: 102, liberal: 6, major: 86, free: "0~10", chapel: 3 },
   pharm: { total: 171, liberal: 6, major: 165, free: "0", chapel: 3 },
@@ -194,14 +196,31 @@ export function getRequirement({
   return null;
 }
 
+// 신입학 기준 단일전공(주전공) 학점 — 다전공 주전공 학점 산정의 기준값
+function baseSingleMajor(setup) {
+  const group = groupOf(setup.deptId);
+  // cs계열 21학번 이하는 130학점 체계 → 단일전공 75
+  if (
+    group === "cs" &&
+    setup.entranceYear != null &&
+    setup.entranceYear < 22
+  ) {
+    return 75;
+  }
+  return FRESHMAN[group].major;
+}
+
 // 전공 이수 계획: 단일/다전공에 따라 주전공·다전공 학점을 나눠서 돌려줌
 // { type, typeLabel, primary, second, secondName }
+// 다전공 주전공 = min(신입기준 단일전공 - 다전공학점, 현재 단일전공)
+//   예) 신입 general 복수전공 39(=75-36) / 편입·전과 3학년 general 복수전공도 39
+//       부전공 = min(54, 현재단일) → 전과 3학년 general은 min(54,51)=51
 export function getMajorPlan(setup) {
   const req = getRequirement(setup);
   if (!req) return null;
 
   const type = (setup && setup.multiType) || "single";
-  const single = req.major; // 단일전공(주전공) 학점
+  const single = req.major; // 현재(입학유형·학년 반영) 단일전공 학점
 
   // 단일전공이거나 다전공 불가 학과면 그냥 단일
   if (type === "single" || !allowsMultiMajor(setup.deptId)) {
@@ -209,7 +228,8 @@ export function getMajorPlan(setup) {
   }
 
   const second = SECOND_CREDITS[type] || 0;
-  const primary = Math.max(0, single - second);
+  const base = baseSingleMajor(setup);
+  const primary = Math.max(0, Math.min(base - second, single));
   const typeLabel =
     (multiTypes.find((t) => t.id === type) || {}).label || type;
 
