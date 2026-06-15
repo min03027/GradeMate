@@ -13,6 +13,7 @@ function SubjectItem({
   onChangeCategory,
   onEdit,
   hasSecondMajor,
+  secondLabel,
   maxGrade = 6,
 }) {
   const [editing, setEditing] = useState(false);
@@ -131,6 +132,7 @@ function SubjectItem({
           onChange={(v) => onChangeCategory(subject.id, v)}
           size="sm"
           multi={hasSecondMajor}
+          secondLabel={secondLabel}
         />
 
         <span className="subject-detail">

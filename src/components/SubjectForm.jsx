@@ -4,7 +4,7 @@ import MajorToggle from "./MajorToggle.jsx";
 
 // 과목 직접 입력 폼
 // 학기/구분/학점/성적은 추가 후에도 그대로 유지해서, 비슷한 과목을 빠르게 연달아 넣을 수 있게 함
-function SubjectForm({ onAdd, maxGrade = 4, hasSecondMajor }) {
+function SubjectForm({ onAdd, maxGrade = 4, hasSecondMajor, secondLabel }) {
   const grades = gradeOptions(maxGrade); // [1, 2, 3, ...] 학년
 
   const [name, setName] = useState("");
@@ -84,6 +84,7 @@ function SubjectForm({ onAdd, maxGrade = 4, hasSecondMajor }) {
           value={category}
           onChange={setCategory}
           multi={hasSecondMajor}
+          secondLabel={secondLabel}
         />
       </div>
 

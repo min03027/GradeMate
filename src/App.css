@@ -1477,6 +1477,111 @@
   line-height: 1.5;
 }
 
+/* 시뮬레이션 - 시나리오 탭 / 이름 / 만들기 */
+.sim-add-first {
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--ring);
+  border: 1.5px dashed var(--primary);
+}
+
+.sim-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.sim-tab {
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: #f1f3fd;
+  transition: all 0.15s ease;
+}
+
+.sim-tab.active {
+  color: #fff;
+  background: var(--primary);
+}
+
+.sim-tab.add {
+  color: var(--primary);
+  background: transparent;
+  border: 1.5px dashed var(--line);
+}
+
+.sim-name-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sim-name-input {
+  flex: 1;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #fff;
+}
+
+.sim-name-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.sim-del {
+  flex-shrink: 0;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+  background: #ffe4e6;
+}
+
+/* 시뮬레이션 - 필요 평균 성적 */
+.sim-avg {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: #f8f9fe;
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.sim-avg.ok {
+  background: #ecfdf3;
+  border-color: #b7eccb;
+  color: var(--ink-2);
+}
+
+.sim-avg.no {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.sim-avg b {
+  color: var(--ink);
+}
+
+.sim-avg-grade {
+  color: var(--primary) !important;
+  font-size: 15px;
+}
+
 /* 시뮬레이션 - 직접 조합 */
 .sim-mix {
   margin-top: 20px;

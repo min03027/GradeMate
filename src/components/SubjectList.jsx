@@ -11,6 +11,7 @@ function SubjectList({
   onChangeCategory,
   onEdit,
   hasSecondMajor,
+  secondLabel,
   maxGrade,
 }) {
   // 접힌(collapsed) 학기들 모음. 기본은 다 펼친 상태
@@ -74,6 +75,7 @@ function SubjectList({
                         onChangeCategory={onChangeCategory}
                         onEdit={onEdit}
                         hasSecondMajor={hasSecondMajor}
+                        secondLabel={secondLabel}
                         maxGrade={maxGrade}
                       />
                     ))}

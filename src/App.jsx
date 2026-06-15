@@ -8,7 +8,11 @@ import SemesterGPAChart from "./components/SemesterGPAChart.jsx";
 import SimulationCard from "./components/SimulationCard.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
-import { getRequirement, getMajorPlan } from "./data/graduationData.js";
+import {
+  getRequirement,
+  getMajorPlan,
+  entranceYearOf,
+} from "./data/graduationData.js";
 import { isRepeatableCourse } from "./utils/credit.js";
 import {
   loadProfile,
@@ -39,6 +43,10 @@ function App() {
   const [checklist, setChecklist] = useState(
     (lastProfile && lastProfile.checklist) || DEFAULT_CHECKLIST
   );
+  // 저장되는 시뮬레이션 시나리오들 (실제 학점엔 영향 없음)
+  const [simulations, setSimulations] = useState(
+    (lastProfile && lastProfile.simulations) || []
+  );
   const [editingSetup, setEditingSetup] = useState(false);
 
   // 값이 바뀔 때마다 현재 학번 프로필에 자동 저장
@@ -49,8 +57,9 @@ function App() {
       setup,
       subjects,
       checklist,
+      simulations,
     });
-  }, [currentStudentId, profileName, setup, subjects, checklist]);
+  }, [currentStudentId, profileName, setup, subjects, checklist, simulations]);
 
   // 학번으로 로그인/시작
   const handleLogin = (studentId, name) => {
@@ -60,12 +69,14 @@ function App() {
       setSetup(prof.setup || null);
       setSubjects(prof.subjects || []);
       setChecklist(prof.checklist || DEFAULT_CHECKLIST);
+      setSimulations(prof.simulations || []);
       setProfileName(prof.name || name || "");
     } else {
       // 새 프로필
       setSetup(null);
       setSubjects([]);
       setChecklist(DEFAULT_CHECKLIST);
+      setSimulations([]);
       setProfileName(name || "");
     }
     setEditingSetup(false);
@@ -154,11 +165,15 @@ function App() {
     return <Login onLogin={handleLogin} />;
   }
 
+  // 학번 3·4번째 자리 → 입학연도 (130/140 자동 판별 등에 사용)
+  const entranceYear = entranceYearOf(currentStudentId);
+
   // 2) 졸업요건 설정 안 했거나 변경 중이면 → 온보딩
   if (!setup || editingSetup) {
     return (
       <Onboarding
         initial={setup}
+        entranceYear={entranceYear}
         onComplete={(value) => {
           setSetup(value);
           setEditingSetup(false);
@@ -167,10 +182,12 @@ function App() {
     );
   }
 
-  // 3) 메인
-  const requirement = getRequirement(setup);
-  const majorPlan = getMajorPlan(setup);
+  // 3) 메인 (학번에서 뽑은 입학연도를 합쳐서 졸업요건 계산)
+  const effSetup = { ...setup, entranceYear };
+  const requirement = getRequirement(effSetup);
+  const majorPlan = getMajorPlan(effSetup);
   const hasSecondMajor = !!(majorPlan && majorPlan.type !== "single");
+  const secondLabel = hasSecondMajor ? majorPlan.typeLabel : "";
   // 1~6학년 모두 선택 가능 (건축 5년제·약학 6년제 등 대비)
   const maxGrade = 6;
 
@@ -195,7 +212,7 @@ function App() {
       <main className="app-main">
         {/* 첫 화면에서 고른 입학유형/학과 기준 졸업요건 */}
         <GraduationRequirement
-          setup={setup}
+          setup={effSetup}
           subjects={subjects}
           onEdit={() => setEditingSetup(true)}
         />
@@ -214,6 +231,7 @@ function App() {
           onAddMany={addManySubjects}
           maxGrade={maxGrade}
           hasSecondMajor={hasSecondMajor}
+          secondLabel={secondLabel}
         />
 
         {/* 평균학점, 이수학점 결과 */}
@@ -222,8 +240,12 @@ function App() {
         {/* 학기별 평점 추이 선그래프 */}
         <SemesterGPAChart subjects={subjects} />
 
-        {/* 목표 평점 시뮬레이션 (저장 안 됨) */}
-        <SimulationCard subjects={subjects} />
+        {/* 목표 평점 시뮬레이션 (시나리오로 저장, 실제 학점엔 영향 없음) */}
+        <SimulationCard
+          subjects={subjects}
+          simulations={simulations}
+          onChange={setSimulations}
+        />
 
         {/* 과목 목록 (학기별 묶음) */}
         <SubjectList
@@ -233,6 +255,7 @@ function App() {
           onChangeCategory={changeCategory}
           onEdit={editSubject}
           hasSecondMajor={hasSecondMajor}
+          secondLabel={secondLabel}
           maxGrade={maxGrade}
         />
       </main>

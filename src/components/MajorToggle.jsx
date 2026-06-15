@@ -1,11 +1,11 @@
 // 과목 구분 토글
 // 기본(2지선다): 전공 / 교양  (value: "major" | "liberal")
-// multi(3지선다): 주전공 / 다전공 / 교양  (value: "major" | "second" | "liberal")
-function MajorToggle({ value, onChange, size, multi }) {
+// multi(3지선다): 주전공 / (복수전공 등) / 교양  (value: "major" | "second" | "liberal")
+function MajorToggle({ value, onChange, size, multi, secondLabel }) {
   const opts = multi
     ? [
         ["major", "주전공"],
-        ["second", "다전공"],
+        ["second", secondLabel || "다전공"],
         ["liberal", "교양"],
       ]
     : [

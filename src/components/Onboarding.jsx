@@ -15,7 +15,7 @@ import {
 } from "../data/graduationData.js";
 
 // 첫 화면: 입학유형 + 학과(계열)을 고르고 시작
-function Onboarding({ initial, onComplete }) {
+function Onboarding({ initial, onComplete, entranceYear }) {
   const [admission, setAdmission] = useState(
     (initial && initial.admission) || "freshman"
   );
@@ -45,6 +45,7 @@ function Onboarding({ initial, onComplete }) {
     transferGrade,
     multiType: effMultiType,
     secondMajorName,
+    entranceYear, // 학번에서 뽑은 입학연도 (130/140 자동 판별)
   };
   const req = getRequirement(setup);
   const plan = getMajorPlan(setup);
@@ -190,6 +191,13 @@ function Onboarding({ initial, onComplete }) {
           <div className="onb-preview">
             <span>졸업 필요 학점</span>
             <strong>{req.total}학점</strong>
+            {admission === "freshman" &&
+              isCsGroup(deptId) &&
+              entranceYear != null && (
+                <span className="onb-preview-sub">
+                  {entranceYear}학번 기준 자동 적용 (22학번부터 140학점)
+                </span>
+              )}
             {plan && plan.type !== "single" && (
               <span className="onb-preview-sub">
                 주전공 {plan.primary} · {plan.typeLabel} {plan.second}학점

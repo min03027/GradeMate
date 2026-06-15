@@ -179,6 +179,39 @@ export function simulateTargetGPA(subjects, target, creditPerCourse = 3) {
   return { currentGPA: gpa, hasGrades: gpaCredit > 0, alreadyMet, results };
 }
 
+// 평점(point) 이상을 만족하는 가장 낮은 letter 등급 (필요 평균 표기용)
+const GRADE_SCALE = [
+  { grade: "D", point: 1.0 },
+  { grade: "D+", point: 1.5 },
+  { grade: "C", point: 2.0 },
+  { grade: "C+", point: 2.5 },
+  { grade: "B", point: 3.0 },
+  { grade: "B+", point: 3.5 },
+  { grade: "A", point: 4.0 },
+  { grade: "A+", point: 4.5 },
+];
+
+export function gradeForPoint(point) {
+  if (point > 4.5) return null; // 불가능
+  const found = GRADE_SCALE.find((g) => g.point >= point - 1e-9);
+  return found ? found.grade : "A+";
+}
+
+// 앞으로 n과목(각 creditPerCourse 학점) 들을 때, 목표 도달에 필요한 "평균 평점"
+export function requiredAvgForCourses(subjects, target, creditPerCourse, n) {
+  if (!n || n <= 0) return null;
+  const { totalPoint, gpaCredit } = gpaStats(subjects);
+  const addCredit = creditPerCourse * n;
+  // (현재점수 + p*추가학점) / (현재학점 + 추가학점) = target  →  p
+  const point = (target * (gpaCredit + addCredit) - totalPoint) / addCredit;
+  return {
+    point,
+    possible: point <= 4.5,
+    trivial: point <= 0, // 0 이하면 사실상 어떤 성적이든 목표 달성
+    grade: gradeForPoint(point),
+  };
+}
+
 // 구분별 이수학점 합계 (주전공/다전공/교양/자유)
 export function calcEarnedByCategory(subjects) {
   const earned = getValidSubjects(subjects).filter((s) => s.grade !== "F");

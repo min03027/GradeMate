@@ -133,14 +133,36 @@ const CHANGE = {
   // 약학과(6년제)는 전과 대상이 아님 → 데이터 없음
 };
 
+// 학번에서 입학연도(2자리) 뽑기. "2022100000" → 22 (3·4번째 자리)
+export function entranceYearOf(studentId) {
+  if (!studentId) return null;
+  const digits = String(studentId).replace(/\D/g, "");
+  if (digits.length < 4) return null;
+  const yy = parseInt(digits.slice(2, 4), 10);
+  return isNaN(yy) ? null : yy;
+}
+
 // 선택값을 받아서 졸업요건 1개를 돌려줌
 // 못 찾으면(예: 약학과 전과) null
-export function getRequirement({ admission, deptId, transferYear, transferGrade }) {
+export function getRequirement({
+  admission,
+  deptId,
+  transferYear,
+  transferGrade,
+  entranceYear,
+}) {
   const group = groupOf(deptId);
 
   // 신입학
   if (admission === "freshman") {
-    return { ...FRESHMAN[group] };
+    const base = { ...FRESHMAN[group] };
+    // 컴퓨터·AI·데이터클라우드 계열: 22학번부터 140학점, 21학번 이하는 130학점
+    if (group === "cs" && entranceYear != null && entranceYear < 22) {
+      base.total = 130;
+      base.major = 75;
+      base.free = "0~16";
+    }
+    return base;
   }
 
   // 편입학
