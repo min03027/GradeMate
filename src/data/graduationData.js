@@ -62,6 +62,69 @@ export function allowsMultiMajor(deptId) {
   return deptId !== "arch" && deptId !== "pharm";
 }
 
+// ---------- 교양필수 - 기초교양 (학번 코호트별 필수과목) ----------
+// 학점 있는 필수과목만 (입력한 과목에서 자동 감지). 0학점 의무교육(흡연음주·MOS·
+// 비전드림)은 과목으로 안 잡혀서 제외 — 흡연·음주 예방교육은 별도 체크박스로 둠.
+const BASIC_2018 = [
+  { name: "그린교육(노작교육)", credit: 1, aliases: ["그린교육", "노작교육"] },
+  { name: "지역사회공헌(사회봉사)", credit: 1, aliases: ["지역사회공헌", "사회봉사"] },
+  { name: "글로컬사고와 표현", credit: 3, aliases: ["글로컬사고와표현", "글로컬사고"] },
+  { name: "글로컬영어 I", credit: 3, aliases: ["글로컬영어1"] },
+  { name: "글로컬영어 II", credit: 3, aliases: ["글로컬영어2"] },
+  { name: "인생설계와진로 I", credit: 1, aliases: ["인생설계와진로1"] },
+  { name: "인생설계와진로 II", credit: 1, aliases: ["인생설계와진로2"] },
+  {
+    name: "컴퓨팅사고력",
+    credit: 3,
+    aliases: ["컴퓨팅사고", "소프트웨어와미래사회"],
+  },
+];
+const BASIC_2017 = [
+  { name: "그린교육(노작교육)", credit: 1, aliases: ["그린교육", "노작교육"] },
+  { name: "지역사회공헌(사회봉사)", credit: 1, aliases: ["지역사회공헌", "사회봉사"] },
+  { name: "독서와토론", credit: 2, aliases: [] },
+  { name: "글쓰기", credit: 2, aliases: [] },
+  { name: "실용영어 I", credit: 3, aliases: ["실용영어1"] },
+  { name: "실용영어 II", credit: 3, aliases: ["실용영어2"] },
+  { name: "인생설계와진로 I", credit: 1, aliases: ["인생설계와진로1"] },
+  { name: "인생설계와진로 II", credit: 1, aliases: ["인생설계와진로2"] },
+  {
+    name: "컴퓨팅사고력",
+    credit: 3,
+    aliases: ["컴퓨팅사고", "소프트웨어와미래사회"],
+  },
+];
+const BASIC_2016 = [
+  { name: "그린교육(노작교육)", credit: 1, aliases: ["그린교육", "노작교육"] },
+  { name: "지역사회공헌(사회봉사)", credit: 1, aliases: ["지역사회공헌", "사회봉사"] },
+  { name: "독서와토론", credit: 2, aliases: [] },
+  { name: "글쓰기", credit: 2, aliases: [] },
+  { name: "실용영어 I", credit: 3, aliases: ["실용영어1"] },
+  { name: "실용영어 II", credit: 3, aliases: ["실용영어2"] },
+  { name: "인생설계와진로 I", credit: 1, aliases: ["인생설계와진로1"] },
+  { name: "인생설계와진로 II", credit: 1, aliases: ["인생설계와진로2"] },
+];
+const BASIC_2015 = [
+  { name: "그린교육(노작교육)", credit: 1, aliases: ["그린교육", "노작교육"] },
+  { name: "지역사회공헌(사회봉사)", credit: 1, aliases: ["지역사회공헌", "사회봉사"] },
+  { name: "독서와토론", credit: 2, aliases: [] },
+  { name: "글쓰기", credit: 1, aliases: [] },
+  { name: "실용영어 I", credit: 3, aliases: ["실용영어1"] },
+  { name: "실용영어 II", credit: 3, aliases: ["실용영어2"] },
+];
+const BASIC_2014 = BASIC_2015; // 2014도 학점 있는 필수과목은 2015와 동일 (나머지는 0학점 의무교육)
+
+// 학번(입학연도 2자리)에 맞는 기초교양 필수과목 목록
+export function basicLiberalCourses(entranceYear) {
+  const yy = entranceYear;
+  if (yy == null || yy >= 18) return BASIC_2018; // 2018학번 이후(2022+ 동일)
+  if (yy === 17) return BASIC_2017;
+  if (yy === 16) return BASIC_2016;
+  if (yy === 15) return BASIC_2015;
+  if (yy === 14) return BASIC_2014;
+  return BASIC_2018; // 그 외(정보 없음)는 최신 기준
+}
+
 // 편입 cs계열 학번 선택지 (학번에 따라 졸업학점이 다름)
 export const transferYears = [
   { id: "from23", label: "23학번 이후" },

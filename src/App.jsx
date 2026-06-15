@@ -221,6 +221,7 @@ function App() {
         <GraduationChecklist
           subjects={subjects}
           chapelCount={(requirement && requirement.chapel) || 7}
+          entranceYear={entranceYear}
           checklist={checklist}
           onChange={setChecklist}
         />
