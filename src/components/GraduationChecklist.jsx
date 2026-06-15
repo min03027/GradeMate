@@ -1,3 +1,5 @@
+import { countChapel } from "../utils/credit.js";
+
 // 교양 영역별 필수 (영역당 1과목 이상 이수해야 함)
 const AREAS = ["인성교양", "인문예술", "자연과학", "사회과학", "디지털 리터러시"];
 
@@ -16,11 +18,15 @@ function hasSwCourse(subjects) {
 // 졸업 필수 항목 점검 (체크 상태는 App이 갖고 있고 자동저장됨 → 여기선 props로 받음)
 function GraduationChecklist({ subjects, chapelCount = 7, checklist, onChange }) {
   const areaDone = checklist.areas || {};
-  const chapelDone = !!checklist.chapel;
   const smokingDone = !!checklist.smoking;
 
   // 자동 감지 항목
   const swDone = hasSwCourse(subjects);
+
+  // 채플: 입력한 횟수를 세서 필요 횟수 채우면 자동 이수 (수동 체크도 허용)
+  const chapelTaken = countChapel(subjects);
+  const chapelByCount = chapelTaken >= chapelCount;
+  const chapelDone = chapelByCount || !!checklist.chapel;
 
   const toggleArea = (area) =>
     onChange({ ...checklist, areas: { ...areaDone, [area]: !areaDone[area] } });
@@ -33,7 +39,7 @@ function GraduationChecklist({ subjects, chapelCount = 7, checklist, onChange })
     if (!areaDone[a]) missing.push(`${a} 영역`);
   });
   if (!swDone) missing.push("소프트웨어와 미래사회(구 컴퓨팅사고력)");
-  if (!chapelDone) missing.push(`채플 ${chapelCount}회`);
+  if (!chapelDone) missing.push(`채플 (${chapelTaken}/${chapelCount}회)`);
   if (!smokingDone) missing.push("흡연·음주 예방교육");
 
   return (
@@ -95,15 +101,22 @@ function GraduationChecklist({ subjects, chapelCount = 7, checklist, onChange })
           </span>
         </div>
 
-        {/* 채플 — 체크박스 */}
+        {/* 채플 — 입력 횟수로 자동 카운트, 필요 횟수 채우면 자동 체크 */}
         <label className={"gc-item" + (chapelDone ? " done" : "")}>
           <input
             type="checkbox"
             checked={chapelDone}
-            onChange={() => setChapel(!chapelDone)}
+            disabled={chapelByCount}
+            onChange={() => setChapel(!checklist.chapel)}
           />
-          <span className="gc-item-name">채플 {chapelCount}회</span>
-          {!chapelDone && <span className="gc-badge">미이수</span>}
+          <span className="gc-item-name">
+            채플 {chapelCount}회 <small>({chapelTaken}/{chapelCount}회 입력됨)</small>
+          </span>
+          {chapelByCount ? (
+            <span className="gc-badge ok">자동 이수</span>
+          ) : (
+            !chapelDone && <span className="gc-badge">미이수</span>
+          )}
         </label>
 
         {/* 흡연·음주 예방교육 — 수업이 아니라 체크박스 */}

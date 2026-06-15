@@ -1,9 +1,10 @@
-import { calcGPA, calcEarnedCredit } from "../utils/credit.js";
+import { calcGPA, calcMajorGPA, calcEarnedCredit } from "../utils/credit.js";
 
 // 평균학점이랑 이수학점 계산해서 보여주는 곳
 function GPAResult({ subjects }) {
   // 계산은 공용 유틸에 맡김 (재수강/학점포기/F 처리 다 포함됨)
   const gpa = calcGPA(subjects);
+  const majorGpa = calcMajorGPA(subjects);
   const totalCredit = calcEarnedCredit(subjects);
 
   return (
@@ -14,6 +15,11 @@ function GPAResult({ subjects }) {
           <p className="result-label">평균 학점 (GPA)</p>
           {/* 소수점 둘째자리까지만 */}
           <p className="result-value">{gpa.toFixed(2)}</p>
+          <p className="result-sub">/ 4.5</p>
+        </div>
+        <div className="result-card">
+          <p className="result-label">전공 평점</p>
+          <p className="result-value">{majorGpa.toFixed(2)}</p>
           <p className="result-sub">/ 4.5</p>
         </div>
         <div className="result-card">

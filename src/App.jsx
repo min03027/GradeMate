@@ -7,6 +7,7 @@ import GPAResult from "./components/GPAResult.jsx";
 import GraduationRequirement from "./components/GraduationRequirement.jsx";
 import GraduationChecklist from "./components/GraduationChecklist.jsx";
 import { getRequirement } from "./data/graduationData.js";
+import { isRepeatableCourse } from "./utils/credit.js";
 import {
   loadProfile,
   saveProfile,
@@ -77,7 +78,9 @@ function App() {
 
   // 과목 추가하는 함수 (Form에서 호출함)
   const addSubject = (name, credit, grade, semester, category) => {
-    const isRetake = subjects.some((s) => s.name === name);
+    // 채플처럼 여러 번 듣는 과목은 재수강으로 잡지 않음
+    const isRetake =
+      !isRepeatableCourse(name) && subjects.some((s) => s.name === name);
 
     const newSubject = {
       id: Date.now(),
@@ -99,7 +102,9 @@ function App() {
       const result = replace ? [] : [...prev];
 
       items.forEach((item, i) => {
-        const isRetake = result.some((s) => s.name === item.name);
+        const isRetake =
+          !isRepeatableCourse(item.name) &&
+          result.some((s) => s.name === item.name);
         result.push({
           id: Date.now() + i,
           name: item.name,

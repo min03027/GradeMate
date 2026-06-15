@@ -1,4 +1,5 @@
 import { formatSemester } from "../utils/semester.js";
+import { isRepeatableCourse } from "../utils/credit.js";
 import MajorToggle from "./MajorToggle.jsx";
 
 // 과목 한 개 보여주는거
@@ -22,9 +23,11 @@ function SubjectItem({ subject, onDelete, onToggleDropped, onChangeCategory }) {
           {subject.credit}학점 · {subject.grade}
         </span>
 
-        {/* 재수강이거나 학점포기면 표시 */}
+        {/* 재수강이거나 학점포기면 표시 (채플 등 반복 이수 과목은 재수강 아님) */}
         <span className="badges">
-          {subject.retake && <span className="badge retake">재수강</span>}
+          {subject.retake && !isRepeatableCourse(subject.name) && (
+            <span className="badge retake">재수강</span>
+          )}
           {subject.dropped && (
             <span className="badge dropped-badge">학점포기</span>
           )}
