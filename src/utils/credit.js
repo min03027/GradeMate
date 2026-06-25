@@ -62,6 +62,26 @@ export function getValidSubjects(subjects) {
   return getLatestSubjects(subjects).filter((s) => !s.dropped);
 }
 
+// 재수강으로 밀려난(같은 이름의 더 최근 과목이 있는) 옛 과목들의 id 모음
+// → 성적 미반영(W) 처리 대상. 채플 등 반복 이수 과목은 제외.
+export function getSupersededIds(subjects) {
+  const latestId = {}; // 과목명 → 가장 최근(id 큰) 과목 id
+  subjects.forEach((s) => {
+    if (isRepeatableCourse(s.name)) return;
+    if (latestId[s.name] == null || s.id > latestId[s.name]) {
+      latestId[s.name] = s.id;
+    }
+  });
+
+  const set = new Set();
+  subjects.forEach((s) => {
+    if (isRepeatableCourse(s.name)) return;
+    // 더 최근 과목이 따로 있으면(자기가 최신이 아니면) 재수강으로 밀려난 과목
+    if (latestId[s.name] != null && s.id !== latestId[s.name]) set.add(s.id);
+  });
+  return set;
+}
+
 // 주어진 과목들의 평점 합계 구하기 (누적 점수·학점·평점)
 // P(패스)처럼 평점 없는 과목은 제외
 function gpaSum(targets) {

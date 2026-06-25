@@ -1,7 +1,12 @@
 import { useState } from "react";
 import SubjectItem from "./SubjectItem.jsx";
 import { formatSemester } from "../utils/semester.js";
-import { groupBySemester, calcGPA, gradePointMap } from "../utils/credit.js";
+import {
+  groupBySemester,
+  calcGPA,
+  gradePointMap,
+  getSupersededIds,
+} from "../utils/credit.js";
 
 // 과목들을 학기별로 묶어서 접고 펼 수 있게 보여주는 곳
 function SubjectList({
@@ -21,6 +26,9 @@ function SubjectList({
 
   // 학기별 그룹 (학기 빠른 순, 미지정은 맨 뒤)
   const groups = groupBySemester(subjects);
+
+  // 재수강으로 밀려난 옛 과목들(성적 미반영 W 처리) id 모음
+  const supersededIds = getSupersededIds(subjects);
 
   return (
     <div className="subject-list">
@@ -77,6 +85,7 @@ function SubjectList({
                         hasSecondMajor={hasSecondMajor}
                         secondLabel={secondLabel}
                         maxGrade={maxGrade}
+                        superseded={supersededIds.has(subject.id)}
                       />
                     ))}
                   </ul>

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { formatSemester, TERMS, gradeOptions } from "../utils/semester.js";
-import { isRepeatableCourse } from "../utils/credit.js";
 import MajorToggle from "./MajorToggle.jsx";
 
 const GRADE_CHOICES = ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "P"];
@@ -15,6 +14,7 @@ function SubjectItem({
   hasSecondMajor,
   secondLabel,
   maxGrade = 6,
+  superseded, // 재수강으로 밀려난 옛 과목 (성적 미반영 W)
 }) {
   const [editing, setEditing] = useState(false);
 
@@ -118,8 +118,12 @@ function SubjectItem({
   }
 
   // ---- 일반 모드 ----
+  // 재수강으로 밀려났거나 학점포기면 → 계산 제외 + 줄 긋기, 성적은 W로 표시
+  const inactive = subject.dropped || superseded;
+  const displayGrade = inactive ? "W" : subject.grade;
+
   return (
-    <li className={"subject-item" + (subject.dropped ? " dropped" : "")}>
+    <li className={"subject-item" + (inactive ? " dropped" : "")}>
       <div className="subject-info">
         {subject.semester && (
           <span className="subject-sem">{formatSemester(subject.semester)}</span>
@@ -136,14 +140,12 @@ function SubjectItem({
         />
 
         <span className="subject-detail">
-          {subject.credit}학점 · {subject.grade}
+          {subject.credit}학점 · {displayGrade}
         </span>
 
-        {/* 재수강이거나 학점포기면 표시 (채플 등 반복 이수 과목은 재수강 아님) */}
+        {/* 재수강(성적 미반영)·학점포기 표시 */}
         <span className="badges">
-          {subject.retake && !isRepeatableCourse(subject.name) && (
-            <span className="badge retake">재수강</span>
-          )}
+          {superseded && <span className="badge retake">재수강</span>}
           {subject.dropped && (
             <span className="badge dropped-badge">학점포기</span>
           )}
